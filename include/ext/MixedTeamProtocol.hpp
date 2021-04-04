@@ -1,0 +1,78 @@
+#ifndef _INCLUDED_MIXEDTEAMPROTOCOL_HPP_
+#define _INCLUDED_MIXEDTEAMPROTOCOL_HPP_
+
+// standard/system headers
+#include <vector>
+#include <string>
+
+// headers from this package
+#include "TeamMember.hpp"
+#include "Object.hpp"
+#include "Pose.hpp"
+#include "PlayerId.hpp"
+
+// headers from rtdb3 package
+#include "rtime.hpp" // rtime is a timestamp
+
+namespace mtp
+{
+
+class Interface
+{
+public:
+    virtual ~Interface() {}
+
+    // getters
+    virtual bool good() const = 0; // false in case of errors, in which case robot should remain idle
+    virtual std::string getOwnRole() const = 0; // readable string, rather than the protocol-internal enum
+    virtual std::vector<mtp::TeamMember> getTeam() const = 0; // get all registered team member data
+    virtual std::vector<mtp::Object> getBalls() const = 0; // typically 0 or 1 balls
+    virtual std::vector<mtp::Object> getObstacles() const = 0;
+
+    // worldModel setters
+    virtual void setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence) = 0;
+    virtual void setOwnBalls(std::vector<mtp::Object> balls) = 0;
+    virtual void setOwnObstacles(std::vector<mtp::Object> obstacles) = 0;
+    virtual void setHumanTeamMember(mtp::Pose const &position, mtp::Pose const &velocity, float confidence) = 0;
+
+    // teamplay setter
+    virtual void setOwnIntention(std::string intention) = 0;
+    virtual void setPreferredOwnRole(std::string role, float preference = 0.5) = 0; // optional, preference between 0.0 (avoid) and 1.0 (force)
+
+    // timestamp setters (all data is timestamped w.r.t. a common t0)
+    virtual void setT0(rtime const &t0) = 0;
+    virtual void setCurrentTime(rtime const &t) = 0;
+
+    // start/stop the communication- and protocol client, asynchronously
+    // so the setters/getters may not be aligned with internal ticks
+    virtual void start() = 0;
+    virtual void stop() = 0;
+
+    // alternatively, user clients may tick explicitly, typically synchronizing with their own WorldModel:
+    // - mtp tick
+    // - mtp get
+    // - wordmodel update
+    // - teamplay update
+    // - mtp set
+    // - (mtp tick -- optional to make data immediately available for other team members)
+    virtual void tick(rtime const &t) = 0;
+
+}; // end of class Interface
+
+class MixedTeamProtocol
+{
+private:
+    // smart pointer provides exception safety
+    std::unique_ptr<Interface> impl;
+
+public:
+    MixedTeamProtocol(PlayerId const &id);
+
+    // pass-through invoker
+    Interface* operator->() const { return impl.get(); }
+
+}; // end of class MixedTeamProtocol
+
+} // end of namespace mtp
+
+#endif
