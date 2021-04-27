@@ -19,7 +19,7 @@ add_library(mixedTeamProtocol
     src/RoleAllocation.cpp
     src/PlayerId.cpp
     src/Player.cpp)
-target_link_libraries(mixedTeamProtocol rtdb2)
+target_link_libraries(mixedTeamProtocol RtDBrtdb)
 
 
 
