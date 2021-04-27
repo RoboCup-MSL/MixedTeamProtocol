@@ -143,6 +143,8 @@ void MixedTeamProtocolImpl::calculateWorldModel()
 
 void MixedTeamProtocolImpl::calculateGood()
 {
+    _good = (_error == 0);
+    // TODO: more?
 }
 
 RoleAllocation MixedTeamProtocolImpl::getCurrentRoleAllocation()
@@ -164,6 +166,7 @@ void MixedTeamProtocolImpl::calculateOwnRole()
     auto currentRoles = getCurrentRoleAllocation();
     // run the algorithm
     RoleAllocationAlgorithm algo(_id, currentRoles, _preferredRoleString, _preferredRoleFactor);
+    //std::cout << algo.describe() << std::endl; // DEBUG
     // handle result
     _error |= algo.error;
     _role = algo.result.at(_id);

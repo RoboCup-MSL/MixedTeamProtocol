@@ -21,7 +21,7 @@ TEST_F(MatchTest, TwoMixedTeamsInitialPhase)
     m.addRobot(2, 5, 'A');
 
     // run
-    // 1 second should be enough time for robots to decide on a role allocation
+    // 1 simulated second should be enough time for robots to decide on a role allocation
     m.advance(1.0);
 
     // assert

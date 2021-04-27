@@ -15,6 +15,14 @@ def run_cmd(args):
     return output
 
 
+class ExtendedUnittestTestCase(unittest.TestCase):
+    def assertMultiLineEqualNoWS(self, got, expected):
+        linesGot = [line.strip() for line in got.strip().splitlines()]
+        linesExpected = [line.strip() for line in expected.strip().splitlines()]
+        self.assertListEqual(linesGot, linesExpected)
+
+
+
 class TestNoArguments(unittest.TestCase):
     def test(self):
         # setup
@@ -68,6 +76,22 @@ Result allocation:
          vendor=1  shirt=4  team=A hash=4     : ATTACKER_MAIN       (UNDEFINED)         
          vendor=1  shirt=5  team=A hash=5     : GOALKEEPER          (UNDEFINED)"""
         self.assertEqual(output.strip(), expected.strip())
+
+
+class TestThreePlayers(ExtendedUnittestTestCase):
+    def test(self):
+        # setup
+        args = []
+        # run
+        output = run_cmd(["-n", "3"])
+        # check
+        expected = """Running algorithm ... done ...
+Result code: 0
+Result allocation:
+  [self] vendor=1  shirt=1  team=A hash=1     : DEFENDER_MAIN       (UNDEFINED)     
+         vendor=1  shirt=2  team=A hash=2     : ATTACKER_MAIN       (UNDEFINED)     
+         vendor=1  shirt=3  team=A hash=3     : GOALKEEPER          (UNDEFINED)"""
+        self.assertMultiLineEqualNoWS(output, expected)
 
 
 if __name__ == '__main__':

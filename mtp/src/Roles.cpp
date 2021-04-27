@@ -69,20 +69,24 @@ const std::map<RoleEnum, int> maximumRoleCount = {
 
 // role count checkers and convenience functions
 
+#include "tprintf.hpp" // DBEUG
+
 bool mtp::checkRoleCount(RoleEnum role, int count)
 {
+    bool result = true;
     // check minimum, if specified
     if (minimumRoleCount.count(role))
     {
-        if (count < minimumRoleCount.at(role)) return false;
+        if (count < minimumRoleCount.at(role)) result = false;
     }
     // check maximum, if specified
     if (maximumRoleCount.count(role))
     {
-        if (count > maximumRoleCount.at(role)) return false;
+        if (count > maximumRoleCount.at(role)) result = false;
     }
-    // all is OK
-    return true;
+    // done
+    //tprintf("debug: role=%s count=%d result=%d", roleEnumToString(role).c_str(), count, result);
+    return result;
 }
 
 bool mtp::checkRoleCount(std::map<RoleEnum, int> const &roleCount)

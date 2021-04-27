@@ -23,7 +23,7 @@ target_link_libraries(mixedTeamProtocol rtdb2)
 
 
 
-# test suite
+# test build targets
 
 add_library(testLib tst/MatchSimulation.cpp tst/RobotClient.cpp)
 target_link_libraries(testLib mixedTeamProtocol)
@@ -31,11 +31,16 @@ target_link_libraries(testLib mixedTeamProtocol)
 add_executable(matchTests tst/matchTests.cpp)
 target_link_libraries(matchTests testLib gtest ${Boost_LIBRARIES} RtDButils)
 
-#add_test(matchTests matchTests)
-#set_tests_properties(matchTests PROPERTIES TIMEOUT 10)
-
 add_executable(testRoleAllocation tst/TestRoleAllocation.cpp)
 target_link_libraries(testRoleAllocation mixedTeamProtocol ${Boost_LIBRARIES})
 
+
+
+# test suite
+
+add_test(matchTests matchTests)
+set_tests_properties(matchTests PROPERTIES TIMEOUT 10)
+
 add_test(TestRoleAllocation python3 ${CMAKE_CURRENT_LIST_DIR}/tst/TestRoleAllocation.py)
 set_tests_properties(TestRoleAllocation PROPERTIES TIMEOUT 10)
+

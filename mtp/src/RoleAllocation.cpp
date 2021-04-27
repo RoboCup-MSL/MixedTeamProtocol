@@ -75,7 +75,7 @@ void RoleAllocationAlgorithm::run()
             result = candidate;
         }
     }
-    //printf("bestPenalty=%e\n", bestPenalty);
+    //printf("bestPenalty=%e\n", bestPenalty); //DEBUG
     // TODO random pick?
     // TODO determine error
 }
@@ -144,14 +144,17 @@ float RoleAllocationAlgorithm::calculatePenalty(RoleAllocation const &candidate)
     //   * satisfy rules
     //   * according to own preference
     //   * similar to current
-    bool valid = checkRoleCount(roleAllocationToCount(candidate)); // TODO upstream, remove all invalid candidates earlier
+    auto count = roleAllocationToCount(candidate);
+    bool validTeam = checkRoleCount(count); // TODO upstream, remove all invalid candidates earlier
+    auto myRole = candidate.at(_myId);
+    bool validSelf = checkRoleCount(myRole, count.at(myRole));
     bool preferred = (candidate.at(_myId) == roleStringToEnum(_myPreferredRoleString));
     int difference = 0;
     for (auto const &rp: candidate)
     {
         difference += (_currentRoles.at(rp.first) != rp.second);
     }
-    float penalty = 1000.0 * (!valid) + 10.0 * difference + 1.0 * !preferred;
+    float penalty = 1000.0 * (!validTeam) + 100.0 * (!validSelf) + 10.0 * difference + 1.0 * !preferred;
     return penalty;
 }
 
