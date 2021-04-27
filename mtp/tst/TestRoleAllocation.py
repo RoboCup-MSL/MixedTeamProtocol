@@ -5,13 +5,12 @@ import subprocess
 import unittest
 
 
-PREFIX = "frun mixedTeamProtocol" # workaround for Falcons out-of-source build
-CMD_NAME = "testRoleAllocation"
+CMD_NAME = "../../build/mtp/testRoleAllocation"
 
 
 def run_cmd(args):
     """Helper function to invoke the command-line interface."""
-    cmd = PREFIX + " " + CMD_NAME + " " + " ".join(args)
+    cmd = CMD_NAME + " " + " ".join(args)
     output = subprocess.check_output(cmd, shell=True).decode("utf-8")
     return output
 

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5.1)
 
 project(mixedTeamProtocol)
 
-find_package(rtdb)
+find_package(RtDB)
 find_package(Boost COMPONENTS thread program_options REQUIRED QUIET)
 
 set(CMAKE_CXX_STANDARD 14)
