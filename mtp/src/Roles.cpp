@@ -69,7 +69,7 @@ const std::map<RoleEnum, int> maximumRoleCount = {
 
 // role count checkers and convenience functions
 
-#include "tprintf.hpp" // DBEUG
+#include "tprintf.hpp" // DEBUG
 
 bool mtp::checkRoleCount(RoleEnum role, int count)
 {
