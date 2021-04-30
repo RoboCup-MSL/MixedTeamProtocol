@@ -22,6 +22,16 @@ add_library(mixedTeamProtocol
 target_link_libraries(mixedTeamProtocol RtDBrtdb)
 
 
+# test config
+
+file(GLOB test_config_files
+  "tst/config/*"
+)
+
+foreach(file ${test_config_files})
+  file(RELATIVE_PATH rel ${CMAKE_CURRENT_SOURCE_DIR}/tst ${file})
+  configure_file(${file} "${CMAKE_CURRENT_BINARY_DIR}/${rel}" COPYONLY)
+endforeach()
 
 # test build targets
 
