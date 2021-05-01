@@ -19,9 +19,19 @@ add_library(mixedTeamProtocol
     src/RoleAllocation.cpp
     src/PlayerId.cpp
     src/Player.cpp)
-target_link_libraries(mixedTeamProtocol rtdb2)
+target_link_libraries(mixedTeamProtocol RtDBrtdb)
 
 
+# test config
+
+file(GLOB test_config_files
+  "tst/config/*"
+)
+
+foreach(file ${test_config_files})
+  file(RELATIVE_PATH rel ${CMAKE_CURRENT_SOURCE_DIR}/tst ${file})
+  configure_file(${file} "${CMAKE_CURRENT_BINARY_DIR}/${rel}" COPYONLY)
+endforeach()
 
 # test build targets
 
