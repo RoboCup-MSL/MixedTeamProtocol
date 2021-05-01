@@ -1,9 +1,0 @@
-<RtDB2Configuration>
-  <Databases>
-    <Database>
-      <Compression type="zstd"/>
-      <Keys/>
-    </Database>
-  </Databases>
-</RtDB2Configuration>
-
