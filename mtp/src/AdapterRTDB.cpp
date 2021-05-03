@@ -8,7 +8,7 @@ using namespace mtp;
 
 AdapterRTDB::AdapterRTDB(ClientType id)
 :
-    RtDB2(id)
+    RtDB2(RtDB2Context::Builder(id).withoutConfigFile().build())
 {
 }
 

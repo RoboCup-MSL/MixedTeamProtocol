@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 
+import os
 import traceback
 import subprocess
 import unittest
 
 
-CMD_NAME = "../../build/mtp/testRoleAllocation"
+
+# path switching for out-of-source builds, assuming they change into the same directory as the binary
+if os.path.isfile('testRoleAllocation'):
+    CMD_NAME = './testRoleAllocation'
+else:
+    # MTP repo situation
+    CMD_NAME = '../../build/mtp/testRoleAllocation'
 
 
 def run_cmd(args):
