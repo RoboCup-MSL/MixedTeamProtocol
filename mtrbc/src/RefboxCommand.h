@@ -2,7 +2,7 @@
 #define REFBOX_COMMAND_H_
 
 #include <string>
-#include <QtCore/QJsonObject>
+#include <QJsonObject>
 
 namespace rbc
 {

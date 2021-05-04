@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.5.1)
 project(mtrbc)
 
 # system dependencies
+find_package(RtDB)
 find_package(Boost REQUIRED COMPONENTS thread QUIET)
 find_package(Qt5 REQUIRED COMPONENTS Core)
 
@@ -21,5 +22,7 @@ target_link_libraries(mtrbclient
 add_executable(mtrbc main.cpp)
 target_link_libraries(mtrbc
     mtrbclient
+    RtDB::rtdb
+    RtDB::comm
 )
 
