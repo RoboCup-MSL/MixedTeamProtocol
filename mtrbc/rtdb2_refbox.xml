@@ -76,6 +76,7 @@
       <KeyDefaults/>
       <Keys>
         <Key id="COMMAND"/>
+        <Key id="TARGET"/>
       </Keys>
     </Database>
   </Databases>

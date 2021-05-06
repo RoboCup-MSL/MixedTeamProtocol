@@ -9,18 +9,31 @@ using namespace rbc;
 
 class Listener : public RefBoxCallback
 {
+
     virtual void handleCommand(RefboxCommand& command) {
         std::string c(command.command());
-        cout << "command: " << command.command() << "; target: " << command.target() << endl;
+        if (_myteam.compare("undefined") == 0 && c.compare("WELCOME") == 0) {
+            _myteam = command.target();
+        }
+        std::string t("all");
+        if (command.target().compare(_myteam) == 0) {
+            t = "us";
+        }
+        else if (command.target().compare("") != 0) {
+            t = "them";
+        }
+        cout << "command: " << c << "; target: " << t << endl;
         _rtdb.put("COMMAND", &c);
+        _rtdb.put("TARGET", &t);
     }
 
     public:
-        Listener(RtDB2Context& ctx) : _rtdb(ctx) {
+        Listener(RtDB2Context& ctx) : _rtdb(ctx), _myteam("undefined") {
         }
 
     private:
         RtDB2 _rtdb;
+        std::string _myteam;
 };
 
 int main()
