@@ -26,3 +26,8 @@ target_link_libraries(mtrbc
     RtDB::comm
 )
 
+add_executable(example-client example.cpp)
+target_link_libraries(example-client
+    RtDB::rtdb
+    RtDB::comm
+)
