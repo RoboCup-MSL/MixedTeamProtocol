@@ -4,7 +4,7 @@ project(mtrbc)
 
 # system dependencies
 find_package(RtDB)
-find_package(Boost REQUIRED COMPONENTS thread QUIET)
+find_package(Boost REQUIRED COMPONENTS program_options thread QUIET)
 find_package(Qt5 REQUIRED COMPONENTS Core)
 
 # library
@@ -24,6 +24,7 @@ target_link_libraries(mtrbc
     mtrbclient
     RtDB::rtdb
     RtDB::comm
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
 )
 
 add_executable(example-client example.cpp)
