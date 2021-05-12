@@ -34,11 +34,48 @@ RoleAllocationAlgorithm::RoleAllocationAlgorithm(
     _myPreferredRoleString(myPreferredRoleString),
     _myPreferredRoleFactor(myPreferredRoleFactor)
 {
+    // input checks
+    check();
     // initialize output
     result.clear();
     error = 0;
     // run
     run();
+}
+
+void RoleAllocationAlgorithm::check() const
+{
+    if (!_myId.valid())
+    {
+        throw std::runtime_error("RoleAllocationAlgorithm got an invalid player id (self): " + _myId.describe());
+    }
+    try
+    {
+        roleStringToEnum(_myPreferredRoleString);
+    }
+    catch (...)
+    {
+        throw std::runtime_error("RoleAllocationAlgorithm got an invalid role preference string: " + _myPreferredRoleString);
+    }
+    if (_myPreferredRoleFactor < 0.0 || _myPreferredRoleFactor > 1.0)
+    {
+        throw std::runtime_error("RoleAllocationAlgorithm got an invalid role preference factor: " + std::to_string(_myPreferredRoleFactor));
+    }
+    for (auto const& imap: _currentRoles)
+    {
+        if (!imap.first.valid())
+        {
+            throw std::runtime_error("RoleAllocationAlgorithm got an invalid player id (current roles): " + imap.first.describe());
+        }
+        try
+        {
+            std::string r = roleEnumToString(imap.second);
+        }
+        catch (...)
+        {
+            throw std::runtime_error("RoleAllocationAlgorithm got an invalid current role");
+        }
+    }
 }
 
 bool RoleAllocationAlgorithm::currentIsOk() const
@@ -90,8 +127,20 @@ std::string RoleAllocationAlgorithm::describe() const
     {
         std::string selfString = "      ";
         if (rolePair.first == _myId) selfString = "[self]";
-        ostr << "  " << selfString << " " << rolePair.first.describe() << ": " << std::setw(20) << std::left << mtp::roleEnumToString(rolePair.second);
-        std::string beforeString = "(" + mtp::roleEnumToString(_currentRoles.at(rolePair.first)) + ")";
+        ostr << "  " << selfString << " " << rolePair.first.describe() << ": " << std::setw(20) << std::left;
+        try
+        {
+            ostr << mtp::roleEnumToString(rolePair.second);
+        }
+        catch (...)
+        {
+            ostr << "ERROR(" << (int)rolePair.second << ")";
+        }
+        std::string beforeString = "";
+        if (_currentRoles.count(rolePair.first))
+        {
+            beforeString = "(" + mtp::roleEnumToString(_currentRoles.at(rolePair.first)) + ")";
+        }
         ostr << std::setw(20) << std::left << beforeString << std::endl;
     }
     return ostr.str();
@@ -120,13 +169,13 @@ std::vector<RoleAllocation> RoleAllocationAlgorithm::generateCandidates()
         int playerIdx = 0;
         int v = (++c) % R;
         int k = c;
-        rc[players[playerIdx]] = RoleEnum(roles[v]);
-        while (v == 0 && playerIdx < P) // carry
+        rc[players.at(playerIdx)] = RoleEnum(roles.at(v));
+        while (v == 0 && playerIdx+1 < P) // carry
         {
             playerIdx++;
             k = k / R;
             v = k % R;
-            rc[players[playerIdx]] = RoleEnum(roles[v]);
+            rc[players.at(playerIdx)] = RoleEnum(roles.at(v));
         }
     }
     return result;

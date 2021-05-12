@@ -45,6 +45,7 @@ private:
     std::string _myPreferredRoleString = "UNDEFINED";
     float _myPreferredRoleFactor = 0.0;
     bool currentIsOk() const;
+    void check() const;
     void run();
     std::vector<RoleAllocation> generateCandidates();
     float calculatePenalty(RoleAllocation const &candidate);

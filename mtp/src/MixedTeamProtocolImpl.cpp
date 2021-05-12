@@ -36,7 +36,16 @@ std::string MixedTeamProtocolImpl::getOwnRole() const
 
 std::vector<mtp::TeamMember> MixedTeamProtocolImpl::getTeam() const
 {
-    return std::vector<mtp::TeamMember>();
+    std::vector<mtp::TeamMember> result;
+    for (auto const &player: _players)
+    {
+        mtp::TeamMember t(player.second.id);
+        t.role = roleEnumToString((mtp::RoleEnum)player.second.packet.role);
+        // TODO: set t.intention
+        // TODO: set t.position and t.velocity
+        result.push_back(t);
+    }
+    return result;
 }
 
 std::vector<mtp::Object> MixedTeamProtocolImpl::getBalls() const
@@ -71,6 +80,8 @@ void MixedTeamProtocolImpl::setOwnIntention(std::string intention)
 
 void MixedTeamProtocolImpl::setPreferredOwnRole(std::string role, float preference)
 {
+    _preferredRoleString = role;
+    _preferredRoleFactor = preference;
 }
 
 void MixedTeamProtocolImpl::setT0(rtime const &t0)
@@ -99,7 +110,8 @@ void MixedTeamProtocolImpl::tick(rtime const &t)
     // check if started
     //if (!_started) throw std::runtime_error("protocol violation: start() needs to be called first"); // ? TODO
     // check for new packets
-    updatePlayers(_communication->getPlayerPackets());
+    auto k = _communication->getPlayerPackets();
+    updatePlayers(k);
     // worldModel processing (always, regardless of errors)
     calculateWorldModel(); // TODO: discuss: to which extent do we want to bring WM responsibility into here?
     // determine own role, if needed
@@ -166,7 +178,7 @@ void MixedTeamProtocolImpl::calculateOwnRole()
     auto currentRoles = getCurrentRoleAllocation();
     // run the algorithm
     RoleAllocationAlgorithm algo(_id, currentRoles, _preferredRoleString, _preferredRoleFactor);
-    //std::cout << algo.describe() << std::endl; // DEBUG
+    //tprintf("algorithm result:\n%s", algo.describe().c_str()); // DEBUG
     // handle result
     _error |= algo.error;
     _role = algo.result.at(_id);

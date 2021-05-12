@@ -46,7 +46,7 @@ private:
     PlayerId _id;
     bool _started = false;
     rtime _t0, _tc;
-    RoleEnum _role;
+    RoleEnum _role = RoleEnum::UNDEFINED;
     uint8_t _intention;
     uint8_t _error;
     std::default_random_engine _rng;

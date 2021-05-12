@@ -29,6 +29,14 @@ PlayerId::PlayerId(int v, int s, char t)
     }
 }
 
+PlayerId::PlayerId(PlayerId const &other)
+:
+    vendorId(other.vendorId),
+    shirtId(other.shirtId),
+    teamId(other.teamId)
+{
+}
+
 PlayerId::~PlayerId()
 {
 }
@@ -45,6 +53,24 @@ std::string PlayerId::describe() const
     char buf[80] = {0};
     sprintf(buf, "vendor=%-2d shirt=%-2d team=%c hash=%-6d", vendorId, shirtId, teamId, hash());
     return std::string(buf);
+}
+
+bool PlayerId::valid() const
+{
+    // check validity
+    if (vendorId < 1)
+    {
+        return false;
+    }
+    if (shirtId < 1)
+    {
+        return false;
+    }
+    if (teamId == '?')
+    {
+        return false;
+    }
+    return true;
 }
 
 bool mtp::operator<(PlayerId const &p1, PlayerId const &p2)

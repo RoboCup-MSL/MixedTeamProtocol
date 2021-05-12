@@ -18,6 +18,8 @@ struct TeamMember
     std::string intention;
     Pose position;
     Pose velocity;
+
+    TeamMember(PlayerId const &id_) : id(id_) {}
 }; // end of class TeamMember
 
 } // end of namespace mtp
