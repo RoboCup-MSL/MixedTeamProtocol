@@ -58,19 +58,7 @@ std::string PlayerId::describe() const
 bool PlayerId::valid() const
 {
     // check validity
-    if (vendorId < 1)
-    {
-        return false;
-    }
-    if (shirtId < 1)
-    {
-        return false;
-    }
-    if (teamId == '?')
-    {
-        return false;
-    }
-    return true;
+    return (vendorId > 0) && (shirtId > 0) && (teamId != '?');
 }
 
 bool mtp::operator<(PlayerId const &p1, PlayerId const &p2)

@@ -29,7 +29,7 @@ public:
     // * take into account all preferences / capabilities of other robots (requires more communication, at least)
     RoleAllocationAlgorithm(
         PlayerId const &myId, 
-        RoleAllocation const &currentRoles, 
+        RoleAllocation const &currentRoleAllocation, 
         std::string const &myPreferredRoleString = "UNDEFINED",
         float myPreferredRoleFactor = 0.0
         );
@@ -41,7 +41,7 @@ public:
 
 private:
     PlayerId _myId;
-    RoleAllocation _currentRoles;
+    RoleAllocation _currentRoleAllocation;
     std::string _myPreferredRoleString = "UNDEFINED";
     float _myPreferredRoleFactor = 0.0;
     bool currentIsOk() const;
