@@ -7,6 +7,8 @@ find_package(RtDB)
 find_package(Boost REQUIRED COMPONENTS program_options thread QUIET)
 find_package(Qt5 REQUIRED COMPONENTS Core)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 # library
 add_library(mtrbclient STATIC
     RefboxCommand.cpp
