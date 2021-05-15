@@ -21,9 +21,9 @@ int main()
     {
         std::string command;
         std::string target;
-        int result = rtdb.get("COMMAND", &command);
-        result += rtdb.get("TARGET", &target);
-        if (result == RTDB2_SUCCESS && last_command.compare(command) != 0)
+        bool success = (rtdb.get("COMMAND", &command) == RTDB2_SUCCESS) &&
+                       (rtdb.get("TARGET", &target) == RTDB2_SUCCESS);
+        if (success && last_command.compare(command) != 0)
         {
             // received new command
             std::cout << "Received command: " << command << "; target: " << target << std::endl;
