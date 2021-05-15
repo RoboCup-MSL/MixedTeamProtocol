@@ -30,7 +30,7 @@ class Listener : public RefBoxCallback
             t = "them";
         }
         cout << "command: " << c << "; target: " << t << endl;
-        _rtdb.put("TARGET", &t);
+        _rtdb.put("TARGETTEAM", &t);
         _rtdb.put("COMMAND", &c);
     }
 

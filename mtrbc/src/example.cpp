@@ -22,11 +22,11 @@ int main()
         std::string command;
         std::string target;
         bool success = (rtdb.get("COMMAND", &command) == RTDB2_SUCCESS) &&
-                       (rtdb.get("TARGET", &target) == RTDB2_SUCCESS);
+                       (rtdb.get("TARGETTEAM", &target) == RTDB2_SUCCESS);
         if (success && last_command.compare(command) != 0)
         {
             // received new command
-            std::cout << "Received command: " << command << "; target: " << target << std::endl;
+            std::cout << "Received command: " << command << "; target team: " << target << std::endl;
             last_command = command;
         }
         usleep(10000);

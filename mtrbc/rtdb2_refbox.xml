@@ -24,7 +24,7 @@
       <KeyDefaults/>
       <Keys>
         <Key id="COMMAND"/>
-        <Key id="TARGET"/>
+        <Key id="TARGETTEAM"/>
       </Keys>
     </Database>
   </Databases>
