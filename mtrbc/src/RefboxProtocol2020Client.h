@@ -6,26 +6,26 @@
 
 namespace rbc
 {
-  class RefBoxCallback
-  {
-  public:
-    virtual void handleCommand(RefboxCommand &command) = 0;
-  };
+    class RefBoxCallback
+    {
+    public:
+        virtual void handleCommand(RefboxCommand &command) = 0;
+    };
 
-  class RefboxProtocol2020Client
-  {
-  public:
-    RefboxProtocol2020Client();
-    ~RefboxProtocol2020Client();
-    bool connect(const std::string &host, int port);
-    void disconnect();
-    int listen(RefBoxCallback *callbackClass);
+    class RefboxProtocol2020Client
+    {
+    public:
+        RefboxProtocol2020Client();
+        ~RefboxProtocol2020Client();
+        bool connect(const std::string &host, int port);
+        void disconnect();
+        int listen(RefBoxCallback *callbackClass);
 
-  private:
-    int sockfd;
-    int len;
-    struct sockaddr_in address;
-  };
+    private:
+        int sockfd;
+        int len;
+        struct sockaddr_in address;
+    };
 }
 
 #endif
