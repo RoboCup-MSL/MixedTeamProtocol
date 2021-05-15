@@ -6,6 +6,8 @@
 typedef int ClientType; // TODO: Rob is considering to use uuid's, moving away from traditional int agent id and all associated limitations
 // (however we should take care that this doesn't make things more difficult to diagnose (?))
 
+#define MTP_RTDB_STORAGE_PATH "/tmp/rtdb_mtp"
+
 // standard/system headers
 #include <vector>
 
