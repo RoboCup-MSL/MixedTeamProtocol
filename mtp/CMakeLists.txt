@@ -19,9 +19,12 @@ add_library(mixedTeamProtocol
     src/RoleAllocation.cpp
     src/PlayerId.cpp
     src/Player.cpp)
+add_library(MTP::mixedTeamProtocol ALIAS mixedTeamProtocol)
 target_link_libraries(mixedTeamProtocol RtDBrtdb)
-
-
+target_include_directories(mixedTeamProtocol
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ext>
+)
 
 # test build targets
 
