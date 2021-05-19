@@ -30,7 +30,7 @@ public:
     RoleAllocationAlgorithm(
         PlayerId const &myId, 
         RoleAllocation const &currentRoleAllocation, 
-        std::string const &myPreferredRoleString = "UNDEFINED",
+        RoleEnum const &myPreferredRole = RoleEnum::UNDEFINED,
         float myPreferredRoleFactor = 0.0
         );
 
@@ -42,7 +42,7 @@ public:
 private:
     PlayerId _myId;
     RoleAllocation _currentRoleAllocation;
-    std::string _myPreferredRoleString = "UNDEFINED";
+    RoleEnum _myPreferredRole = RoleEnum::UNDEFINED;
     float _myPreferredRoleFactor = 0.0;
     bool currentIsOk() const;
     void check() const;

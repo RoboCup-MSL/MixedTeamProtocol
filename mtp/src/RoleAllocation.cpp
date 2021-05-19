@@ -25,13 +25,13 @@ RoleCount mtp::roleAllocationToCount(RoleAllocation const &roles)
 RoleAllocationAlgorithm::RoleAllocationAlgorithm(
     PlayerId const &myId,
     RoleAllocation const &currentRoleAllocation,
-    std::string const &myPreferredRoleString,
+    RoleEnum const &myPreferredRole,
     float myPreferredRoleFactor
     )
 :
     _myId(myId),
     _currentRoleAllocation(currentRoleAllocation),
-    _myPreferredRoleString(myPreferredRoleString),
+    _myPreferredRole(myPreferredRole),
     _myPreferredRoleFactor(myPreferredRoleFactor)
 {
     // input checks
@@ -48,14 +48,6 @@ void RoleAllocationAlgorithm::check() const
     if (!_myId.valid())
     {
         throw std::runtime_error("RoleAllocationAlgorithm got an invalid player id (self): " + _myId.describe());
-    }
-    try
-    {
-        roleStringToEnum(_myPreferredRoleString);
-    }
-    catch (...)
-    {
-        throw std::runtime_error("RoleAllocationAlgorithm got an invalid role preference string: " + _myPreferredRoleString);
     }
     if (_myPreferredRoleFactor < 0.0 || _myPreferredRoleFactor > 1.0)
     {
@@ -83,8 +75,7 @@ bool RoleAllocationAlgorithm::currentIsOk() const
     // check own role preference
     if (_myPreferredRoleFactor > 0.0)
     {
-        RoleEnum myPreferredRole = roleStringToEnum(_myPreferredRoleString);
-        if (_currentRoleAllocation.at(_myId) != myPreferredRole) return false;
+        if (_currentRoleAllocation.at(_myId) != _myPreferredRole) return false;
     }
     // check role count against specification
     auto count = roleAllocationToCount(_currentRoleAllocation);
@@ -191,7 +182,7 @@ float RoleAllocationAlgorithm::calculatePenalty(RoleAllocation const &candidate)
     bool validTeam = checkRoleCount(count); // TODO upstream, remove all invalid candidates earlier
     auto myRole = candidate.at(_myId);
     bool validSelf = checkRoleCount(myRole, count.at(myRole));
-    bool preferred = (candidate.at(_myId) == roleStringToEnum(_myPreferredRoleString));
+    bool preferred = (candidate.at(_myId) == _myPreferredRole);
     int difference = 0;
     for (auto const &rp: candidate)
     {

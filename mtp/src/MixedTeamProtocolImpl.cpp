@@ -29,9 +29,9 @@ bool MixedTeamProtocolImpl::good() const
     return _good;
 }
 
-std::string MixedTeamProtocolImpl::getOwnRole() const
+RoleEnum const &MixedTeamProtocolImpl::getOwnRole() const
 {
-    return roleEnumToString(_role);
+    return _role;
 }
 
 std::vector<mtp::TeamMember> MixedTeamProtocolImpl::getTeam() const
@@ -78,9 +78,9 @@ void MixedTeamProtocolImpl::setOwnIntention(std::string intention)
 {
 }
 
-void MixedTeamProtocolImpl::setPreferredOwnRole(std::string role, float preference)
+void MixedTeamProtocolImpl::setPreferredOwnRole(RoleEnum const &role, float preference)
 {
-    _preferredRoleString = role;
+    _preferredRole = role;
     _preferredRoleFactor = preference;
 }
 
@@ -177,7 +177,7 @@ void MixedTeamProtocolImpl::calculateOwnRole()
     // gather current role allocation
     auto currentRoles = getCurrentRoleAllocation();
     // run the algorithm
-    RoleAllocationAlgorithm algo(_id, currentRoles, _preferredRoleString, _preferredRoleFactor);
+    RoleAllocationAlgorithm algo(_id, currentRoles, _preferredRole, _preferredRoleFactor);
     //tprintf("algorithm result:\n%s", algo.describe().c_str()); // DEBUG
     // handle result
     _error |= algo.error;

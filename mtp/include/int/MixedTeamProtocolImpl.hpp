@@ -24,7 +24,7 @@ public:
 
     // implementation of the API
     bool good() const;
-    std::string getOwnRole() const;
+    mtp::RoleEnum const &getOwnRole() const;
     std::vector<mtp::TeamMember> getTeam() const;
     std::vector<mtp::Object> getBalls() const;
     std::vector<mtp::Object> getObstacles() const;
@@ -33,7 +33,7 @@ public:
     void setOwnObstacles(std::vector<mtp::Object> obstacles);
     void setHumanTeamMember(mtp::Pose const &position, mtp::Pose const &velocity, float confidence);
     void setOwnIntention(std::string intention);
-    void setPreferredOwnRole(std::string role, float preference);
+    void setPreferredOwnRole(mtp::RoleEnum const &role, float preference);
     void setT0(rtime const &t0);
     void setCurrentTime(rtime const &t);
     void start();
@@ -50,7 +50,7 @@ private:
     uint8_t _intention;
     uint8_t _error;
     std::default_random_engine _rng;
-    std::string _preferredRoleString = "UNDEFINED";
+    RoleEnum _preferredRole = RoleEnum::UNDEFINED;
     float _preferredRoleFactor = 0.0;
     std::shared_ptr<Communication> _communication;
     std::map<ClientType, Player> _players;
