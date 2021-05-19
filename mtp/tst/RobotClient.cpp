@@ -30,7 +30,7 @@ bool RobotClient::readyToPlay() const
     return _mtp->good();
 }
 
-std::string RobotClient::getOwnRole() const
+mtp::RoleEnum const &RobotClient::getOwnRole() const
 {
     return _mtp->getOwnRole();
 }
@@ -43,6 +43,6 @@ const char *bool2str(bool b)
 std::string RobotClient::statusReport() const
 {
     char buf[80] = {0};
-    sprintf(buf, "%s ready=%5s role=%s", id.describe().c_str(), bool2str(readyToPlay()), getOwnRole().c_str());
+    sprintf(buf, "%s ready=%5s role=%s", id.describe().c_str(), bool2str(readyToPlay()), mtp::roleEnumToString(getOwnRole()).c_str());
     return std::string(buf);
 }

@@ -24,16 +24,18 @@ RoleCount mtp::roleAllocationToCount(RoleAllocation const &roles)
 
 RoleAllocationAlgorithm::RoleAllocationAlgorithm(
     PlayerId const &myId,
-    RoleAllocation const &currentRoles,
-    std::string const &myPreferredRoleString,
+    RoleAllocation const &currentRoleAllocation,
+    RoleEnum const &myPreferredRole,
     float myPreferredRoleFactor
     )
 :
     _myId(myId),
-    _currentRoles(currentRoles),
-    _myPreferredRoleString(myPreferredRoleString),
+    _currentRoleAllocation(currentRoleAllocation),
+    _myPreferredRole(myPreferredRole),
     _myPreferredRoleFactor(myPreferredRoleFactor)
 {
+    // input checks
+    check();
     // initialize output
     result.clear();
     error = 0;
@@ -41,16 +43,42 @@ RoleAllocationAlgorithm::RoleAllocationAlgorithm(
     run();
 }
 
+void RoleAllocationAlgorithm::check() const
+{
+    if (!_myId.valid())
+    {
+        throw std::runtime_error("RoleAllocationAlgorithm got an invalid player id (self): " + _myId.describe());
+    }
+    if (_myPreferredRoleFactor < 0.0 || _myPreferredRoleFactor > 1.0)
+    {
+        throw std::runtime_error("RoleAllocationAlgorithm got an invalid role preference factor: " + std::to_string(_myPreferredRoleFactor));
+    }
+    for (auto const& imap: _currentRoleAllocation)
+    {
+        if (!imap.first.valid())
+        {
+            throw std::runtime_error("RoleAllocationAlgorithm got an invalid player id (current roles): " + imap.first.describe());
+        }
+        try
+        {
+            std::string r = roleEnumToString(imap.second);
+        }
+        catch (...)
+        {
+            throw std::runtime_error("RoleAllocationAlgorithm got an invalid current role");
+        }
+    }
+}
+
 bool RoleAllocationAlgorithm::currentIsOk() const
 {
     // check own role preference
     if (_myPreferredRoleFactor > 0.0)
     {
-        RoleEnum myPreferredRole = roleStringToEnum(_myPreferredRoleString);
-        if (_currentRoles.at(_myId) != myPreferredRole) return false;
+        if (_currentRoleAllocation.at(_myId) != _myPreferredRole) return false;
     }
     // check role count against specification
-    auto count = roleAllocationToCount(_currentRoles);
+    auto count = roleAllocationToCount(_currentRoleAllocation);
     return checkRoleCount(count);
 }
 
@@ -59,7 +87,7 @@ void RoleAllocationAlgorithm::run()
     // check if current situation is OK
     if (currentIsOk())
     {
-        result = _currentRoles;
+        result = _currentRoleAllocation;
         return;
     }
     // generate candidates
@@ -90,8 +118,20 @@ std::string RoleAllocationAlgorithm::describe() const
     {
         std::string selfString = "      ";
         if (rolePair.first == _myId) selfString = "[self]";
-        ostr << "  " << selfString << " " << rolePair.first.describe() << ": " << std::setw(20) << std::left << mtp::roleEnumToString(rolePair.second);
-        std::string beforeString = "(" + mtp::roleEnumToString(_currentRoles.at(rolePair.first)) + ")";
+        ostr << "  " << selfString << " " << rolePair.first.describe() << ": " << std::setw(20) << std::left;
+        try
+        {
+            ostr << mtp::roleEnumToString(rolePair.second);
+        }
+        catch (...)
+        {
+            ostr << "ERROR(" << (int)rolePair.second << ")";
+        }
+        std::string beforeString = "";
+        if (_currentRoleAllocation.count(rolePair.first))
+        {
+            beforeString = "(" + mtp::roleEnumToString(_currentRoleAllocation.at(rolePair.first)) + ")";
+        }
         ostr << std::setw(20) << std::left << beforeString << std::endl;
     }
     return ostr.str();
@@ -103,7 +143,7 @@ std::vector<RoleAllocation> RoleAllocationAlgorithm::generateCandidates()
     std::vector<RoleAllocation> result;
     std::vector<RoleEnum> roles = allAssignableRoles();
     std::vector<PlayerId> players;
-    for (auto const& imap: _currentRoles) players.push_back(imap.first);
+    for (auto const& imap: _currentRoleAllocation) players.push_back(imap.first);
     // initialize running RoleAllocation object
     RoleAllocation rc;
     for (auto const &player: players) rc[player] = roles.at(0);
@@ -120,13 +160,13 @@ std::vector<RoleAllocation> RoleAllocationAlgorithm::generateCandidates()
         int playerIdx = 0;
         int v = (++c) % R;
         int k = c;
-        rc[players[playerIdx]] = RoleEnum(roles[v]);
-        while (v == 0 && playerIdx < P) // carry
+        rc[players.at(playerIdx)] = RoleEnum(roles.at(v));
+        while (v == 0 && playerIdx+1 < P) // carry
         {
             playerIdx++;
             k = k / R;
             v = k % R;
-            rc[players[playerIdx]] = RoleEnum(roles[v]);
+            rc[players.at(playerIdx)] = RoleEnum(roles.at(v));
         }
     }
     return result;
@@ -142,11 +182,11 @@ float RoleAllocationAlgorithm::calculatePenalty(RoleAllocation const &candidate)
     bool validTeam = checkRoleCount(count); // TODO upstream, remove all invalid candidates earlier
     auto myRole = candidate.at(_myId);
     bool validSelf = checkRoleCount(myRole, count.at(myRole));
-    bool preferred = (candidate.at(_myId) == roleStringToEnum(_myPreferredRoleString));
+    bool preferred = (candidate.at(_myId) == _myPreferredRole);
     int difference = 0;
     for (auto const &rp: candidate)
     {
-        difference += (_currentRoles.at(rp.first) != rp.second);
+        difference += (_currentRoleAllocation.at(rp.first) != rp.second);
     }
     float penalty = 1000.0 * (!validTeam) + 100.0 * (!validSelf) + 10.0 * difference + 1.0 * !preferred;
     return penalty;

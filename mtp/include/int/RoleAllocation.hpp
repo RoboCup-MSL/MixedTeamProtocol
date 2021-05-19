@@ -29,8 +29,8 @@ public:
     // * take into account all preferences / capabilities of other robots (requires more communication, at least)
     RoleAllocationAlgorithm(
         PlayerId const &myId, 
-        RoleAllocation const &currentRoles, 
-        std::string const &myPreferredRoleString = "UNDEFINED",
+        RoleAllocation const &currentRoleAllocation, 
+        RoleEnum const &myPreferredRole = RoleEnum::UNDEFINED,
         float myPreferredRoleFactor = 0.0
         );
 
@@ -41,10 +41,11 @@ public:
 
 private:
     PlayerId _myId;
-    RoleAllocation _currentRoles;
-    std::string _myPreferredRoleString = "UNDEFINED";
+    RoleAllocation _currentRoleAllocation;
+    RoleEnum _myPreferredRole = RoleEnum::UNDEFINED;
     float _myPreferredRoleFactor = 0.0;
     bool currentIsOk() const;
+    void check() const;
     void run();
     std::vector<RoleAllocation> generateCandidates();
     float calculatePenalty(RoleAllocation const &candidate);
