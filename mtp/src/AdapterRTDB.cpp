@@ -6,9 +6,9 @@
 
 using namespace mtp;
 
-AdapterRTDB::AdapterRTDB(ClientType id)
+AdapterRTDB::AdapterRTDB(ClientType id, char teamId)
 :
-    RtDB2(RtDB2Context::Builder(id).withoutConfigFile().withRootPath(MTP_RTDB_STORAGE_PATH).build())
+    RtDB2(RtDB2Context::Builder(id).withoutConfigFile().withRootPath(MTP_RTDB_STORAGE_PATH + std::string("_") + std::string(1, teamId)).build())
 {
 }
 

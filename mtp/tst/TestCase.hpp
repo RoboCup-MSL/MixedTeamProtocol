@@ -1,9 +1,16 @@
 #ifndef _INCLUDED_MIXEDTEAMPROTOCOL_TST_TESTCASE_HPP_
 #define _INCLUDED_MIXEDTEAMPROTOCOL_TST_TESTCASE_HPP_
 
+// system
+#include <filesystem> // C++17
+
 /* Include testframework */
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
+
+// MTP headers
+#include "int/AdapterRTDB.hpp"
+
 
 using namespace ::testing;
 
@@ -14,6 +21,20 @@ class TestCase : public Test
 public:
     TestCase()
     {
+        // communication workaround/trick
+        // 1. either we need to instantiate comm (as process, or thread) per team
+        // 2. or we need to make the data available for all agents
+
+        // we choose for approach 2 and apply a symlink trick:
+        // before each test, wipe the MTP rtdb databases for both teams and link then
+
+        // first determine the location of a helper script, which resides in the tst directory next to this file
+        std::filesystem::path p(__FILE__);
+        std::string command = std::string(p.parent_path()) + "/databaseLinkTrick.py";
+        command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "_A";
+        command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "_B";
+        tprintf("running command: %s", command.c_str())
+        system(command.c_str());
     };
 };
 
