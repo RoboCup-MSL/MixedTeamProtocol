@@ -47,8 +47,8 @@ private:
     bool _started = false;
     rtime _t0, _tc;
     RoleEnum _role = RoleEnum::UNDEFINED;
-    uint8_t _intention;
-    uint8_t _error;
+    uint8_t _intention = 0;
+    uint8_t _error = 0;
     std::default_random_engine _rng;
     RoleEnum _preferredRole = RoleEnum::UNDEFINED;
     float _preferredRoleFactor = 0.0;

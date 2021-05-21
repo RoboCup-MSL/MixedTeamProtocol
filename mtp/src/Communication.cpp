@@ -7,7 +7,7 @@ using namespace mtp;
 Communication::Communication(PlayerId const &id)
 :
     _id(id),
-    _rtdb(_id.hash())
+    _rtdb(_id.shirtId, id.teamId)
 {
     // TODO: how to ensure current id is not already claimed? Rob? Should make requirement + test case in RTDB layer.
 }

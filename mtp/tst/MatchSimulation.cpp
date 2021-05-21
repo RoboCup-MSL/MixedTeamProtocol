@@ -1,6 +1,9 @@
 // header implemented in this file
 #include "MatchSimulation.hpp"
 
+// header from MTP
+#include "Roles.hpp"
+
 // standard/system headers
 // ...
 
@@ -49,14 +52,28 @@ void MatchSimulation::advance(float duration)
 
 bool MatchSimulation::ok() const
 {
+    // checks:
+    // 1. each robot must report ready-to-play
+    // 2. the role allocation per team must be valid
+    // notes:
+    // * it can happen that check 1 is true, but 2 not, in case robots are not communicating with each other
     bool result = true;
+    std::map<char, mtp::RoleCount> roleCounts;
     for (const auto& robot: _robots)
     {
-        if (!robot->readyToPlay())
+        if (!robot->readyToPlay()) // check 1
         {
             result = false;
             break;
         }
+        roleCounts[robot->id.teamId][robot->getOwnRole()] += 1;
+    }
+    // check 2
+    if (roleCounts.size() < 1) result = false;
+    if (roleCounts.size() > 2) result = false;
+    for (const auto& count: roleCounts)
+    {
+        if (!mtp::checkRoleCount(count.second)) result = false;
     }
     return result;
 }

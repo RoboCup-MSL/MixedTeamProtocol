@@ -16,7 +16,7 @@ int main(int argc, char **argv)
         ("help,h", "produce help message")
         ("my-id,i", po::value<int>()->default_value(1), "my id")
         ("my-role,c", po::value<std::string>()->default_value("UNDEFINED"), "my current role")
-        //("my-preference,p", po::value<std::string, float>()->default_value("UNDEFINED", 0.0), "my preferred role and factor")
+        ("my-preference,p", po::value<std::string>()->default_value("UNDEFINED"), "my preferred role")
         ("num-players,n", po::value<int>()->default_value(5), "number of players in team")
         ("teammember-1,1", po::value<std::string>(), "role of first team member")
         ("teammember-2,2", po::value<std::string>(), "role of second team member")
@@ -63,7 +63,13 @@ int main(int argc, char **argv)
 
     // run the algorithm
     std::cout << "Running algorithm ..." << std::flush;
-    auto r = mtp::RoleAllocationAlgorithm(myId, currentRoles);
+    mtp::RoleEnum myPreferredRole = mtp::roleStringToEnum(vm.at("my-preference").as<std::string>());
+    float myPreferredRoleFactor = 0.0;
+    if (myPreferredRole != mtp::RoleEnum::UNDEFINED)
+    {
+        myPreferredRoleFactor = 1.0; // TODO: allow more options?
+    }
+    auto r = mtp::RoleAllocationAlgorithm(myId, currentRoles, myPreferredRole, myPreferredRoleFactor);
     std::cout << " done ..." << std::endl;
 
     // print algorithm result versus input

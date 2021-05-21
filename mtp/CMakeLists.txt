@@ -5,7 +5,7 @@ project(mixedTeamProtocol)
 find_package(RtDB)
 find_package(Boost COMPONENTS thread program_options REQUIRED QUIET)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17) # for std::filesystem
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Werror")
 
 include_directories("include")
