@@ -22,15 +22,17 @@ def run_cmd(args):
     return output
 
 
-class ExtendedUnittestTestCase(unittest.TestCase):
+class RoleAllocationTestCase(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.maxDiff = None
     def assertMultiLineEqualNoWS(self, got, expected):
         linesGot = [line.strip() for line in got.strip().splitlines()]
         linesExpected = [line.strip() for line in expected.strip().splitlines()]
         self.assertListEqual(linesGot, linesExpected)
 
 
-
-class TestNoArguments(unittest.TestCase):
+class TestNoArguments(RoleAllocationTestCase):
     def test(self):
         # setup
         args = []
@@ -48,7 +50,7 @@ Result allocation:
         self.assertEqual(output.strip(), expected.strip())
 
 
-class TestCurrentGoalie(unittest.TestCase):
+class TestCurrentGoalie(RoleAllocationTestCase):
     def test(self):
         self.maxDiff = None
         # setup
@@ -67,7 +69,7 @@ Result allocation:
         self.assertEqual(output.strip(), expected.strip())
 
 
-class TestCurrentDefender(unittest.TestCase):
+class TestCurrentDefender(RoleAllocationTestCase):
     def test(self):
         # setup
         args = []
@@ -85,7 +87,27 @@ Result allocation:
         self.assertEqual(output.strip(), expected.strip())
 
 
-class TestThreePlayers(ExtendedUnittestTestCase):
+class TestNewPreference(RoleAllocationTestCase):
+    """
+    Taking over the goalkeeper role by setting preference.
+    """
+    def test(self):
+        # setup
+        args = []
+        # run
+        output = run_cmd(["-i 4", "-n 4", "-1 GOALKEEPER", "-p GOALKEEPER"])
+        # check
+        expected = """Running algorithm ... done ...
+Result code: 0
+Result allocation:
+         vendor=1  shirt=1  team=A hash=1     : DEFENDER_MAIN       (GOALKEEPER)        
+         vendor=1  shirt=2  team=A hash=2     : ATTACKER_ASSIST     (UNDEFINED)         
+         vendor=1  shirt=3  team=A hash=3     : ATTACKER_MAIN       (UNDEFINED)         
+  [self] vendor=1  shirt=4  team=A hash=4     : GOALKEEPER          (UNDEFINED)"""
+        self.assertEqual(output.strip(), expected.strip())
+
+
+class TestThreePlayers(RoleAllocationTestCase):
     def test(self):
         # setup
         args = []
