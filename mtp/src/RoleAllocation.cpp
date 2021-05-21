@@ -188,6 +188,6 @@ float RoleAllocationAlgorithm::calculatePenalty(RoleAllocation const &candidate)
     {
         difference += (_currentRoleAllocation.at(rp.first) != rp.second);
     }
-    float penalty = 1000.0 * (!validTeam) + 100.0 * (!validSelf) + 10.0 * difference + 1.0 * !preferred;
+    float penalty = 1000.0 * (!validTeam) + 100.0 * (!validSelf) + 1.0 * difference + 10.0 * !preferred;
     return penalty;
 }
