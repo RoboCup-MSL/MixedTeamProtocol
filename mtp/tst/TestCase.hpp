@@ -27,6 +27,7 @@ public:
 
         // we choose for approach 2 and apply a symlink trick:
         // before each test, wipe the MTP rtdb databases for both teams and link then
+        // also cleanup after the test
 
         // first determine the location of a helper script, which resides in the tst directory next to this file
         std::filesystem::path p(__FILE__);
@@ -36,6 +37,19 @@ public:
         tprintf("running command: %s", command.c_str())
         system(command.c_str());
     };
+
+    ~TestCase()
+    {
+        std::string command = "rm -rf";
+        command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "_A";
+        command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "_B";
+        if (command.size() > 20) // a little precaution in case for some reason the string would evaluate to "rm -rf /tmp" or something
+        {
+            tprintf("running command: %s", command.c_str())
+            system(command.c_str());
+        }
+    };
+
 };
 
 } // end of namespace mtp
