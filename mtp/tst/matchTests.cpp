@@ -28,6 +28,27 @@ TEST_F(MatchTest, TwoMixedTeamsInitialPhase)
     EXPECT_TRUE(m.ok());
 }
 
+TEST_F(MatchTest, RoleAllocationNegotationSingleTeamInvalidCurrentState)
+{
+    // bug as reported by Jurge from VDL-Robotsports on 2021-05-21
+
+    // setup
+    MatchSimulation m;
+    m.addRobot(1, 1, 'A');
+    m.addRobot(1, 2, 'A');
+    m.addRobot(1, 3, 'A');
+    m.addRobot(1, 4, 'A');
+    // current: 1 and 4 attacker_generic, 2 attacker_assist and 3 attacker_main
+    // 
+
+    // run
+    // 1 simulated second should be enough time for robots to decide on a role allocation
+    m.advance(1.0);
+
+    // assert
+    EXPECT_TRUE(m.ok());
+}
+
 // TODO: more tests: wm data exchange, refbox signals, preferred roles, jitter/randomness, ...
 
 int main(int argc, char **argv)
