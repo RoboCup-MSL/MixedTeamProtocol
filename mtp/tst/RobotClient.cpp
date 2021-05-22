@@ -35,6 +35,16 @@ mtp::RoleEnum const &RobotClient::getOwnRole() const
     return _mtp->getOwnRole();
 }
 
+void RobotClient::setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence)
+{
+    _mtp->setOwnPosVel(position, velocity, confidence);
+}
+
+std::vector<mtp::TeamMember> RobotClient::getTeam() const
+{
+    return _mtp->getTeam();
+}
+
 const char *bool2str(bool b)
 {
     return b ? "true" : "false";

@@ -1,5 +1,6 @@
 #include "MatchSimulation.hpp"
 #include "TestCase.hpp"
+#include <vector>
 
 
 class MatchTest : public mtp::TestCase { };
@@ -8,17 +9,28 @@ TEST_F(MatchTest, TwoMixedTeamsInitialPhase)
 {
     // setup
     // 2+3 against 3+2
+    std::vector<mtp::PlayerId> players;
+    players.push_back(mtp::PlayerId(1, 1, 'A'));
+    players.push_back(mtp::PlayerId(1, 2, 'A'));
+    players.push_back(mtp::PlayerId(1, 3, 'B'));
+    players.push_back(mtp::PlayerId(1, 4, 'B'));
+    players.push_back(mtp::PlayerId(1, 5, 'B'));
+    players.push_back(mtp::PlayerId(2, 1, 'B'));
+    players.push_back(mtp::PlayerId(2, 2, 'B'));
+    players.push_back(mtp::PlayerId(2, 3, 'A'));
+    players.push_back(mtp::PlayerId(2, 4, 'A'));
+    players.push_back(mtp::PlayerId(2, 5, 'A'));
+
     MatchSimulation m;
-    m.addRobot(1, 1, 'A');
-    m.addRobot(1, 2, 'A');
-    m.addRobot(1, 3, 'B');
-    m.addRobot(1, 4, 'B');
-    m.addRobot(1, 5, 'B');
-    m.addRobot(2, 1, 'B');
-    m.addRobot(2, 2, 'B');
-    m.addRobot(2, 3, 'A');
-    m.addRobot(2, 4, 'A');
-    m.addRobot(2, 5, 'A');
+    for (auto &p : players)
+    {
+        m.addRobot(p);
+
+        mtp::Pose pos;
+        pos.x = ((float)rand() / RAND_MAX);
+        pos.y = ((float)rand() / RAND_MAX);
+        m.setPosVel(p, pos, pos, 0);
+    }
 
     // run
     // 1 simulated second should be enough time for robots to decide on a role allocation
