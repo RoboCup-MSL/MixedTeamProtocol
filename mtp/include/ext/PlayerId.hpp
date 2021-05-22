@@ -12,7 +12,6 @@ class PlayerId
 public:
     PlayerId(int v, int s, char t = 'A');
     PlayerId(PlayerId const &other);
-    ~PlayerId();
 
     int hash() const; // TODO?? uuid?
     std::string describe() const;

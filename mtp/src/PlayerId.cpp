@@ -37,10 +37,6 @@ PlayerId::PlayerId(PlayerId const &other)
 {
 }
 
-PlayerId::~PlayerId()
-{
-}
-
 int PlayerId::hash() const
 {
     // TODO make nicer... need to discuss with Rob - uuid + some diagnostics facility perhaps
