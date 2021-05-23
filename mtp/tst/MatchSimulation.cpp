@@ -24,11 +24,24 @@ bool compareRobotClientPtr(RobotClient const *a, RobotClient const *b)
     return a->id.teamId < b->id.teamId;
 }
 
-void MatchSimulation::addRobot(int vendorId, int shirtId, char teamId, float frequency, float jitter)
+void MatchSimulation::addRobot(mtp::PlayerId const &playerId, float frequency, float jitter)
 {
-    _robots.push_back(new RobotClient(mtp::PlayerId(vendorId, shirtId, teamId), _t0, frequency, jitter));
+    _players.push_back(playerId);
+    _robots.push_back(new RobotClient(playerId, _t0, frequency, jitter));
     // sort robots by teamId, to improve readibility of report()
     sort(_robots.begin(), _robots.end(), compareRobotClientPtr);
+}
+
+void MatchSimulation::setPosVel(mtp::PlayerId const &playerId, mtp::Pose const &position, mtp::Pose const &velocity, float confidence)
+{
+    // store for comparison later
+    _playerPose.insert(std::pair<mtp::PlayerId, mtp::Pose>(playerId, position));
+
+    RobotClient* rc = find(playerId);
+    if (rc != nullptr)
+    {
+        rc->setOwnPosVel(position, velocity, confidence);
+    }
 }
 
 void MatchSimulation::advance(float duration)
@@ -51,6 +64,11 @@ void MatchSimulation::advance(float duration)
 }
 
 bool MatchSimulation::ok() const
+{
+    return okRoleAllocation() && okWorldModel();
+}
+
+bool MatchSimulation::okRoleAllocation() const
 {
     // checks:
     // 1. each robot must report ready-to-play
@@ -78,6 +96,21 @@ bool MatchSimulation::ok() const
     return result;
 }
 
+bool MatchSimulation::okWorldModel() const
+{
+    bool result = true;
+    for (auto &p : _players)
+    {
+        result = result && (getTeam(p).size() == 5);
+        for (auto &member : getTeam(p))
+        {
+            result = result && (member.position.x == _playerPose.find(member.id)->second.x);
+            result = result && (member.position.y == _playerPose.find(member.id)->second.y);
+        }
+    }
+    return result;
+}
+
 void MatchSimulation::report() const
 {
     std::ostringstream ostr;
@@ -85,4 +118,22 @@ void MatchSimulation::report() const
     {
         printf("%s\n", robot->statusReport().c_str());
     }
+}
+
+RobotClient* MatchSimulation::find(mtp::PlayerId const &playerId) const
+{
+    for (auto &c : _robots)
+    {
+        if (c->id == playerId)
+        {
+            return c;
+        }
+    }
+    return nullptr;
+}
+
+std::vector<mtp::TeamMember> MatchSimulation::getTeam(mtp::PlayerId const &playerId) const
+{
+    RobotClient* rc = find(playerId);
+    return rc == nullptr ? std::vector<mtp::TeamMember>() : rc->getTeam();
 }

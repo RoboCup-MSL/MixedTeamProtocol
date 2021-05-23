@@ -32,6 +32,8 @@ class RobotClient
         std::string statusReport() const;
 
         // worldModel i/o
+        void setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence);
+        std::vector<mtp::TeamMember> getTeam() const;
 
     private:
         mtp::MixedTeamProtocol _mtp;

@@ -41,8 +41,17 @@ std::vector<mtp::TeamMember> MixedTeamProtocolImpl::getTeam() const
     {
         mtp::TeamMember t(player.second.id);
         t.role = roleEnumToString((mtp::RoleEnum)player.second.packet.role);
+        if (!player.second.packet.self_loc.empty()) {
+            auto const &pv = player.second.packet.self_loc.front();
+            t.position.x = pv.x;
+            t.position.y = pv.y;
+            t.position.rz = pv.Rz;
+            t.velocity.x = pv.vx;
+            t.velocity.y = pv.vy;
+            t.velocity.rz = pv.vRz;
+            // TODO: what to do with confidence?
+        }
         // TODO: set t.intention
-        // TODO: set t.position and t.velocity
         result.push_back(t);
     }
     return result;
@@ -60,6 +69,7 @@ std::vector<mtp::Object> MixedTeamProtocolImpl::getObstacles() const
 
 void MixedTeamProtocolImpl::setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence)
 {
+    _ownPosVel = toPosVel(position, velocity, confidence);
 }
 
 void MixedTeamProtocolImpl::setOwnBalls(std::vector<mtp::Object> balls)
@@ -191,9 +201,24 @@ PlayerPacket MixedTeamProtocolImpl::makePacket() const
     result.shirt_id = _id.shirtId;
     result.team_id = _id.teamId;
     result.timestamp_ms = int(round(double(_tc - _t0) * 1000));
-    // TODO: balls, obstacles, self_loc
+    result.self_loc.push_back(_ownPosVel);
+    // TODO: balls, obstacles
     result.role = (uint8_t)_role;
     result.intention = _intention;
     result.error = _error;
+    return result;
+}
+
+PosVel MixedTeamProtocolImpl::toPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence)
+{
+    PosVel result;
+    result.x = position.x;
+    result.y = position.y;
+    result.Rz = position.rz;
+    result.vx = velocity.x;
+    result.vy = velocity.y;
+    result.vRz = velocity.rz;
+    result.confidence = confidence;
+
     return result;
 }
