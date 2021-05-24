@@ -54,6 +54,7 @@ private:
     float _preferredRoleFactor = 0.0;
     std::shared_ptr<Communication> _communication;
     std::map<ClientType, Player> _players;
+    PosVel _ownPosVel = { 0 };
 
     // functions
     void updatePlayers(std::vector<PlayerPacket> packets);
@@ -62,6 +63,7 @@ private:
     RoleAllocation getCurrentRoleAllocation();
     void calculateOwnRole();
     PlayerPacket makePacket() const;
+    PosVel toPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence);
 
 }; // end of class MixedTeamProtocolImpl
 
