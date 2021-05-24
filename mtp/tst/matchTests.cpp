@@ -65,16 +65,20 @@ TEST_F(MatchTest, RoleAllocationNegotationSingleTeamInvalidCurrentState)
 
     // setup
     MatchSimulation m;
-    m.addRobot(mtp::PlayerId(1, 1, 'A'));
-    m.addRobot(mtp::PlayerId(1, 2, 'A'));
-    m.addRobot(mtp::PlayerId(1, 3, 'A'));
-    m.addRobot(mtp::PlayerId(1, 4, 'A'));
-    // current: 1 and 4 attacker_generic, 2 attacker_assist and 3 attacker_main
-    // 
+    m.addRobot(mtp::PlayerId(1, 1, 'A')).setCurrentRole(mtp::RoleEnum::ATTACKER_GENERIC);
+    m.addRobot(mtp::PlayerId(1, 2, 'A')).setCurrentRole(mtp::RoleEnum::ATTACKER_ASSIST);
+    m.addRobot(mtp::PlayerId(1, 3, 'A')).setCurrentRole(mtp::RoleEnum::ATTACKER_MAIN);
+    m.addRobot(mtp::PlayerId(1, 4, 'A')).setCurrentRole(mtp::RoleEnum::ATTACKER_GENERIC);
 
     // run
-    // 1 simulated second should be enough time for robots to decide on a role allocation
-    m.advanceDuration(1.0);
+    m.advanceTicks(2); // let the robots learn of each others existenc and possibly already settle on a role allocation
+
+    // again force the given situation
+    m.getRobot(mtp::PlayerId(1, 1, 'A')).setCurrentRole(mtp::RoleEnum::ATTACKER_GENERIC);
+    m.getRobot(mtp::PlayerId(1, 2, 'A')).setCurrentRole(mtp::RoleEnum::ATTACKER_ASSIST);
+    m.getRobot(mtp::PlayerId(1, 3, 'A')).setCurrentRole(mtp::RoleEnum::ATTACKER_MAIN);
+    m.getRobot(mtp::PlayerId(1, 4, 'A')).setCurrentRole(mtp::RoleEnum::ATTACKER_GENERIC);
+    m.advanceTicks(2);
 
     // assert
     MatchSimulationChecks t(m);

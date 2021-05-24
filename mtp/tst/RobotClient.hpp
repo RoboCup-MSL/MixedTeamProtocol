@@ -27,6 +27,7 @@ class RobotClient
         // role allocation and conflict resolution
         bool readyToPlay() const;
         mtp::RoleEnum const &getOwnRole() const;
+        void setCurrentRole(mtp::RoleEnum const &role);
 
         // status report one liner
         std::string statusReport() const;

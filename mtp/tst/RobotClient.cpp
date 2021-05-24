@@ -36,6 +36,11 @@ mtp::RoleEnum const &RobotClient::getOwnRole() const
     return (*_mtp)->getOwnRole();
 }
 
+void RobotClient::setCurrentRole(mtp::RoleEnum const &role)
+{
+    (*_mtp)->setCurrentRole(role);
+}
+
 void RobotClient::setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence)
 {
     (*_mtp)->setOwnPosVel(position, velocity, confidence);
