@@ -1,4 +1,5 @@
 #include "MatchSimulation.hpp"
+#include "MatchSimulationChecks.hpp"
 #include "TestCase.hpp"
 #include <vector>
 
@@ -9,35 +10,53 @@ TEST_F(MatchTest, TwoMixedTeamsInitialPhase)
 {
     // setup
     // 2+3 against 3+2
-    std::vector<mtp::PlayerId> players;
-    players.push_back(mtp::PlayerId(1, 1, 'A'));
-    players.push_back(mtp::PlayerId(1, 2, 'A'));
-    players.push_back(mtp::PlayerId(1, 3, 'B'));
-    players.push_back(mtp::PlayerId(1, 4, 'B'));
-    players.push_back(mtp::PlayerId(1, 5, 'B'));
-    players.push_back(mtp::PlayerId(2, 1, 'B'));
-    players.push_back(mtp::PlayerId(2, 2, 'B'));
-    players.push_back(mtp::PlayerId(2, 3, 'A'));
-    players.push_back(mtp::PlayerId(2, 4, 'A'));
-    players.push_back(mtp::PlayerId(2, 5, 'A'));
-
     MatchSimulation m;
-    for (auto &p : players)
-    {
-        m.addRobot(p);
-
-        mtp::Pose pos;
-        pos.x = ((float)rand() / RAND_MAX);
-        pos.y = ((float)rand() / RAND_MAX);
-        m.setPosVel(p, pos, pos, 0);
-    }
+    m.addRobot(mtp::PlayerId(1, 1, 'A'));
+    m.addRobot(mtp::PlayerId(1, 2, 'A'));
+    m.addRobot(mtp::PlayerId(1, 3, 'B'));
+    m.addRobot(mtp::PlayerId(1, 4, 'B'));
+    m.addRobot(mtp::PlayerId(1, 5, 'B'));
+    m.addRobot(mtp::PlayerId(2, 1, 'B'));
+    m.addRobot(mtp::PlayerId(2, 2, 'B'));
+    m.addRobot(mtp::PlayerId(2, 3, 'A'));
+    m.addRobot(mtp::PlayerId(2, 4, 'A'));
+    m.addRobot(mtp::PlayerId(2, 5, 'A'));
 
     // run
     // 1 simulated second should be enough time for robots to decide on a role allocation
-    m.advance(1.0);
+    m.advanceDuration(1.0);
 
     // assert
-    EXPECT_TRUE(m.ok());
+    MatchSimulationChecks t(m);
+    EXPECT_TRUE(t.checkTeamMemberCount('A', 5));
+    EXPECT_TRUE(t.checkTeamMemberCount('B', 5));
+    EXPECT_TRUE(t.checkRoleAllocation());
+}
+
+TEST_F(MatchTest, WorldModelPosVel)
+{
+    // setup
+    // 2 against 2, no full team needed just to check administration
+    MatchSimulation m;
+    MatchSimulationChecks t(m);
+    for (int id = 1; id <= 4; ++id)
+    {
+        int shirtId = 1 + (id - 1) % 2; // resp. 1, 2, 1, 2
+        char teamId = id < 3 ? 'A' : 'B';
+        auto p = mtp::PlayerId(1, shirtId, teamId);
+        mtp::Pose pos(id, id);
+        mtp::Pose vel(-id, -id);
+        m.addRobot(p).setOwnPosVel(pos, vel, 1.0);
+        t.setExpectedPosVel(p, pos, vel);
+    }
+
+    // run
+    m.advanceTicks(2); // first tick SEND and second tick RECV are needed to ensure data arrives
+
+    // assert
+    EXPECT_TRUE(t.checkTeamMemberCount('A', 2));
+    EXPECT_TRUE(t.checkTeamMemberCount('B', 2));
+    EXPECT_TRUE(t.checkWorldModelPosVel()); // check that locations are consistent for the interpretation of each robot
 }
 
 TEST_F(MatchTest, RoleAllocationNegotationSingleTeamInvalidCurrentState)
@@ -55,10 +74,13 @@ TEST_F(MatchTest, RoleAllocationNegotationSingleTeamInvalidCurrentState)
 
     // run
     // 1 simulated second should be enough time for robots to decide on a role allocation
-    m.advance(1.0);
+    m.advanceDuration(1.0);
 
     // assert
-    EXPECT_TRUE(m.ok());
+    MatchSimulationChecks t(m);
+    EXPECT_TRUE(t.checkTeamMemberCount('A', 4));
+    EXPECT_TRUE(t.checkTeamMemberCount('B', 0));
+    EXPECT_TRUE(t.checkRoleAllocation());
 }
 
 // TODO: more tests: wm data exchange, refbox signals, preferred roles, jitter/randomness, ...

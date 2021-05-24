@@ -28,7 +28,7 @@ target_include_directories(mixedTeamProtocol
 
 # test build targets
 
-add_library(testLib tst/MatchSimulation.cpp tst/RobotClient.cpp)
+add_library(testLib tst/MatchSimulation.cpp tst/MatchSimulationChecks.cpp tst/RobotClient.cpp)
 target_link_libraries(testLib mixedTeamProtocol)
 
 add_executable(matchTests tst/matchTests.cpp)

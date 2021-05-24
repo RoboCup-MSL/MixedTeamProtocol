@@ -13,30 +13,28 @@
 class MatchSimulation
 {
     public:
-        MatchSimulation();
+        MatchSimulation(float frequency = 10.0);
         ~MatchSimulation();
 
     public:
         // test setup
         RobotClient &addRobot(mtp::PlayerId const &playerId, float frequency = 10.0, float jitter = 0.0);
         RobotClient &getRobot(mtp::PlayerId const &playerId);
-        void setPosVel(mtp::PlayerId const &playerId, mtp::Pose const &position, mtp::Pose const &velocity, float confidence);
 
         // runtime match simulation
-        void advance(float duration = 1.0);
+        void advanceTick();
+        void advanceTicks(int ticks);
+        void advanceDuration(float duration);
 
-        // state / result inspection
-        bool ok() const;
+        // state / result inspection, see also MatchSimulationChecks
         void report() const;
+        std::vector<mtp::PlayerId> getPlayers() const;
 
     private:
+        bool _verbose = true;
         std::map<mtp::PlayerId, RobotClient> _robots;
-        std::map<mtp::PlayerId, mtp::Pose> _playerPose;
-        rtime _t0;
-
-        bool okRoleAllocation() const;
-        bool okWorldModel() const;
-        std::vector<mtp::TeamMember> getTeam(mtp::PlayerId const &playerId); // TODO move elsewhere?
+        rtime _t0, _tc;
+        float _tstep = 0.1;
 };
 
 #endif

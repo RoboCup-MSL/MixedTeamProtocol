@@ -8,9 +8,11 @@
 // ...
 
 
-MatchSimulation::MatchSimulation()
+MatchSimulation::MatchSimulation(float frequency)
 :
-    _t0(rtime::now())
+    _t0(rtime::now()),
+    _tc(_t0),
+    _tstep(1.0 / frequency)
 {
 }
 
@@ -31,91 +33,6 @@ RobotClient &MatchSimulation::addRobot(mtp::PlayerId const &playerId, float freq
     return getRobot(playerId);
 }
 
-void MatchSimulation::setPosVel(mtp::PlayerId const &playerId, mtp::Pose const &position, mtp::Pose const &velocity, float confidence)
-{
-    // store for comparison later
-    _playerPose.insert(std::pair<mtp::PlayerId, mtp::Pose>(playerId, position));
-
-    RobotClient &rc = getRobot(playerId);
-    rc.setOwnPosVel(position, velocity, confidence);
-}
-
-void MatchSimulation::advance(float duration)
-{
-    rtime t = _t0;
-    rtime te = _t0 + duration;
-    float dt = 0.1;
-    while (t < te)
-    {
-        t += dt;
-        printf("\n");
-        printf("simulation step START timestamp: %s\n", t.toStr().c_str());
-        // poke robots
-        for (auto& robot: _robots)
-        {
-            robot.second.tick(t);
-        }
-        report();
-    }
-}
-
-bool MatchSimulation::ok() const
-{
-    return okRoleAllocation() && okWorldModel();
-}
-
-bool MatchSimulation::okRoleAllocation() const
-{
-    // checks:
-    // 1. each robot must report ready-to-play
-    // 2. the role allocation per team must be valid
-    // notes:
-    // * it can happen that check 1 is true, but 2 not, in case robots are not communicating with each other
-    bool result = true;
-    std::map<char, mtp::RoleCount> roleCounts;
-    for (const auto& robot: _robots)
-    {
-        if (!robot.second.readyToPlay()) // check 1
-        {
-            result = false;
-            break;
-        }
-        roleCounts[robot.second.id.teamId][robot.second.getOwnRole()] += 1;
-    }
-    // check 2
-    if (roleCounts.size() < 1) result = false;
-    if (roleCounts.size() > 2) result = false;
-    for (const auto& count: roleCounts)
-    {
-        if (!mtp::checkRoleCount(count.second)) result = false;
-    }
-    return result;
-}
-
-bool MatchSimulation::okWorldModel() const
-{
-    bool result = true;
-    /*for (auto &p : _players)
-    {
-        result = result && (getTeam(p).size() == 5);
-        for (auto &member : getTeam(p))
-        {
-            result = result && (member.position.x == _playerPose.find(member.id)->second.x);
-            result = result && (member.position.y == _playerPose.find(member.id)->second.y);
-        }
-    }*/
-    return result;
-}
-
-void MatchSimulation::report() const
-{
-    std::ostringstream ostr;
-    for (const auto& robot: _robots)
-    {
-        printf("%s\n", robot.second.statusReport().c_str());
-    }
-}
-
 RobotClient& MatchSimulation::getRobot(mtp::PlayerId const &playerId)
 {
     try
@@ -128,8 +45,45 @@ RobotClient& MatchSimulation::getRobot(mtp::PlayerId const &playerId)
     }
 }
 
-std::vector<mtp::TeamMember> MatchSimulation::getTeam(mtp::PlayerId const &playerId)
+void MatchSimulation::advanceTick()
 {
-    RobotClient &rc = getRobot(playerId);
-    return rc.getTeam();
+    _tc += _tstep;
+    // poke robots
+    if (_verbose)
+    {
+        printf("\n");
+        printf("simulation step START timestamp: %s\n", _tc.toStr().c_str());
+    }
+    for (auto& robot: _robots)
+    {
+        robot.second.tick(_tc);
+    }
+    if (_verbose) report();
+}
+
+void MatchSimulation::advanceTicks(int ticks)
+{
+    while (ticks--) advanceTick();
+}
+
+void MatchSimulation::advanceDuration(float duration)
+{
+    rtime te = _tc + duration;
+    while (_tc < te) advanceTick();
+}
+
+void MatchSimulation::report() const
+{
+    std::ostringstream ostr;
+    for (const auto& robot: _robots)
+    {
+        printf("%s\n", robot.second.statusReport().c_str());
+    }
+}
+
+std::vector<mtp::PlayerId> MatchSimulation::getPlayers() const
+{
+    std::vector<mtp::PlayerId> result;
+    for (const auto& robot: _robots) result.push_back(robot.first);
+    return result;
 }
