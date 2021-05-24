@@ -8,16 +8,16 @@
 RobotClient::RobotClient(mtp::PlayerId const &i, rtime const &t0, float frequency, float jitter)
 :
     id(i),
+    _mtp(std::make_unique<mtp::MixedTeamProtocol>(id)),
     _frequency(frequency),
     _jitter(jitter)
 {
-    _mtp = new mtp::MixedTeamProtocol(id);
     (*_mtp)->setT0(t0);
 }
 
 RobotClient::~RobotClient()
 {
-    // TODO? delete _mtp;
+    // no need to delete mtp, because it is a std::unique_ptr
 }
 
 void RobotClient::tick(rtime const &t)

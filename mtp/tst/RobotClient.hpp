@@ -36,7 +36,7 @@ class RobotClient
         std::vector<mtp::TeamMember> getTeam() const;
 
     private:
-        mtp::MixedTeamProtocol *_mtp = NULL;
+        std::shared_ptr<mtp::MixedTeamProtocol> _mtp;
         float _frequency;
         float _jitter;
 };

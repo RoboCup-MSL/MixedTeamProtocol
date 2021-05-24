@@ -27,7 +27,7 @@ bool operator<(RobotClient const &a, RobotClient const &b)
 RobotClient &MatchSimulation::addRobot(mtp::PlayerId const &playerId, float frequency, float jitter)
 {
     if (_robots.count(playerId)) throw std::runtime_error("player already registered: " + playerId.describe());
-    _robots.insert({playerId, RobotClient(playerId, _t0, frequency, jitter)});
+    _robots.try_emplace(playerId, RobotClient(playerId, _t0, frequency, jitter));
     return getRobot(playerId);
 }
 
