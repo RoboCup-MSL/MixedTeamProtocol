@@ -94,6 +94,13 @@ void MixedTeamProtocolImpl::setPreferredOwnRole(RoleEnum const &role, float pref
     _preferredRoleFactor = preference;
 }
 
+void MixedTeamProtocolImpl::setCurrentRole(mtp::RoleEnum const &role)
+{
+    // TEST INTERFACE
+    _role = role;
+    _communication->sendPlayerPacket(makePacket());
+}
+
 void MixedTeamProtocolImpl::setT0(rtime const &t0)
 {
     _t0 = t0;

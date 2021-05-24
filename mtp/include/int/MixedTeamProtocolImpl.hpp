@@ -39,6 +39,7 @@ public:
     void start();
     void stop();
     void tick(rtime const &t);
+    void setCurrentRole(mtp::RoleEnum const &role);
 
 private:
     // data members

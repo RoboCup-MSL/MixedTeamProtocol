@@ -56,7 +56,11 @@ public:
     // - teamplay update
     // - mtp set
     // - (mtp tick -- optional to make data immediately available for other team members)
+    // TODO: this story may not be uptodate anymore -- replace it with a reference to a few sequence diagrams
     virtual void tick(rtime const &t) = 0;
+
+    // test interface
+    virtual void setCurrentRole(mtp::RoleEnum const &role) = 0;
 
 }; // end of class Interface
 
