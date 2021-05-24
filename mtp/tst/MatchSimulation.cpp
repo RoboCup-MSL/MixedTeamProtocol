@@ -18,18 +18,17 @@ MatchSimulation::~MatchSimulation()
 {
 }
 
-bool compareRobotClientPtr(RobotClient const *a, RobotClient const *b)
+bool operator<(RobotClient const &a, RobotClient const &b)
 {
-    if (a->id.teamId == b->id.teamId) return a->id.shirtId < b->id.shirtId;
-    return a->id.teamId < b->id.teamId;
+    if (a.id.teamId == b.id.teamId) return a.id.shirtId < b.id.shirtId;
+    return a.id.teamId < b.id.teamId;
 }
 
-void MatchSimulation::addRobot(mtp::PlayerId const &playerId, float frequency, float jitter)
+RobotClient &MatchSimulation::addRobot(mtp::PlayerId const &playerId, float frequency, float jitter)
 {
-    _players.push_back(playerId);
-    _robots.push_back(new RobotClient(playerId, _t0, frequency, jitter));
-    // sort robots by teamId, to improve readibility of report()
-    sort(_robots.begin(), _robots.end(), compareRobotClientPtr);
+    if (_robots.count(playerId)) throw std::runtime_error("player already registered: " + playerId.describe());
+    _robots.insert({playerId, RobotClient(playerId, _t0, frequency, jitter)});
+    return getRobot(playerId);
 }
 
 void MatchSimulation::setPosVel(mtp::PlayerId const &playerId, mtp::Pose const &position, mtp::Pose const &velocity, float confidence)
@@ -37,11 +36,8 @@ void MatchSimulation::setPosVel(mtp::PlayerId const &playerId, mtp::Pose const &
     // store for comparison later
     _playerPose.insert(std::pair<mtp::PlayerId, mtp::Pose>(playerId, position));
 
-    RobotClient* rc = find(playerId);
-    if (rc != nullptr)
-    {
-        rc->setOwnPosVel(position, velocity, confidence);
-    }
+    RobotClient &rc = getRobot(playerId);
+    rc.setOwnPosVel(position, velocity, confidence);
 }
 
 void MatchSimulation::advance(float duration)
@@ -57,7 +53,7 @@ void MatchSimulation::advance(float duration)
         // poke robots
         for (auto& robot: _robots)
         {
-            robot->tick(t);
+            robot.second.tick(t);
         }
         report();
     }
@@ -79,12 +75,12 @@ bool MatchSimulation::okRoleAllocation() const
     std::map<char, mtp::RoleCount> roleCounts;
     for (const auto& robot: _robots)
     {
-        if (!robot->readyToPlay()) // check 1
+        if (!robot.second.readyToPlay()) // check 1
         {
             result = false;
             break;
         }
-        roleCounts[robot->id.teamId][robot->getOwnRole()] += 1;
+        roleCounts[robot.second.id.teamId][robot.second.getOwnRole()] += 1;
     }
     // check 2
     if (roleCounts.size() < 1) result = false;
@@ -99,7 +95,7 @@ bool MatchSimulation::okRoleAllocation() const
 bool MatchSimulation::okWorldModel() const
 {
     bool result = true;
-    for (auto &p : _players)
+    /*for (auto &p : _players)
     {
         result = result && (getTeam(p).size() == 5);
         for (auto &member : getTeam(p))
@@ -107,7 +103,7 @@ bool MatchSimulation::okWorldModel() const
             result = result && (member.position.x == _playerPose.find(member.id)->second.x);
             result = result && (member.position.y == _playerPose.find(member.id)->second.y);
         }
-    }
+    }*/
     return result;
 }
 
@@ -116,24 +112,24 @@ void MatchSimulation::report() const
     std::ostringstream ostr;
     for (const auto& robot: _robots)
     {
-        printf("%s\n", robot->statusReport().c_str());
+        printf("%s\n", robot.second.statusReport().c_str());
     }
 }
 
-RobotClient* MatchSimulation::find(mtp::PlayerId const &playerId) const
+RobotClient& MatchSimulation::getRobot(mtp::PlayerId const &playerId)
 {
-    for (auto &c : _robots)
+    try
     {
-        if (c->id == playerId)
-        {
-            return c;
-        }
+        return _robots.at(playerId);
     }
-    return nullptr;
+    catch (...)
+    {
+        throw std::runtime_error("player not registered: " + playerId.describe());
+    }
 }
 
-std::vector<mtp::TeamMember> MatchSimulation::getTeam(mtp::PlayerId const &playerId) const
+std::vector<mtp::TeamMember> MatchSimulation::getTeam(mtp::PlayerId const &playerId)
 {
-    RobotClient* rc = find(playerId);
-    return rc == nullptr ? std::vector<mtp::TeamMember>() : rc->getTeam();
+    RobotClient &rc = getRobot(playerId);
+    return rc.getTeam();
 }
