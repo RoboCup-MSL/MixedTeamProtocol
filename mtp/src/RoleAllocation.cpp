@@ -94,7 +94,7 @@ void RoleAllocationAlgorithm::run()
     auto candidates = generateCandidates(); // TODO caching?
     // pick the best one
     float bestPenalty = 1e9;
-    for (auto candidate: candidates)
+    for (auto const &candidate: candidates)
     {
         float penalty = calculatePenalty(candidate);
         if (penalty < bestPenalty)
