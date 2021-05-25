@@ -29,9 +29,9 @@ bool MixedTeamProtocolImpl::good() const
     return _good;
 }
 
-RoleEnum const &MixedTeamProtocolImpl::getOwnRole() const
+RoleEnum MixedTeamProtocolImpl::getOwnRole() const
 {
-    return _role;
+    return (RoleEnum)_communication->getState<int>("CURRENT_ROLE");
 }
 
 std::vector<mtp::TeamMember> MixedTeamProtocolImpl::getTeam() const
@@ -45,10 +45,10 @@ std::vector<mtp::TeamMember> MixedTeamProtocolImpl::getTeam() const
             auto const &pv = player.second.packet.self_loc.front();
             t.position.x = pv.x;
             t.position.y = pv.y;
-            t.position.rz = pv.Rz;
+            t.position.rz = pv.rz;
             t.velocity.x = pv.vx;
             t.velocity.y = pv.vy;
-            t.velocity.rz = pv.vRz;
+            t.velocity.rz = pv.vrz;
             // TODO: what to do with confidence?
         }
         // TODO: set t.intention
@@ -69,7 +69,15 @@ std::vector<mtp::Object> MixedTeamProtocolImpl::getObstacles() const
 
 void MixedTeamProtocolImpl::setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence)
 {
-    _ownPosVel = toPosVel(position, velocity, confidence);
+    mtp::PosVel pv;
+    pv.x = position.x;
+    pv.y = position.y;
+    pv.rz = position.rz;
+    pv.vx = velocity.x;
+    pv.vy = velocity.y;
+    pv.vrz = velocity.rz;
+    pv.confidence = confidence;
+    _communication->setState("OWN_POS_VEL", pv);
 }
 
 void MixedTeamProtocolImpl::setOwnBalls(std::vector<mtp::Object> balls)
@@ -90,15 +98,10 @@ void MixedTeamProtocolImpl::setOwnIntention(std::string intention)
 
 void MixedTeamProtocolImpl::setPreferredOwnRole(RoleEnum const &role, float preference)
 {
-    _preferredRole = role;
-    _preferredRoleFactor = preference;
-}
-
-void MixedTeamProtocolImpl::setCurrentRole(mtp::RoleEnum const &role)
-{
-    // TEST INTERFACE
-    _role = role;
-    _communication->sendPlayerPacket(makePacket());
+    mtp::PreferredRole r;
+    r.role = (int)role;
+    r.preference = preference;
+    _communication->setState("PREFERRED_ROLE", r);
 }
 
 void MixedTeamProtocolImpl::setT0(rtime const &t0)
@@ -126,7 +129,8 @@ void MixedTeamProtocolImpl::tick(rtime const &t)
     _error = 0;
     // check if started
     //if (!_started) throw std::runtime_error("protocol violation: start() needs to be called first"); // ? TODO
-    // check for new packets
+    // check for new packets, get _state struct
+    _state = _communication->getPlayerState();
     auto k = _communication->getPlayerPackets();
     updatePlayers(k);
     // worldModel processing (always, regardless of errors)
@@ -135,7 +139,8 @@ void MixedTeamProtocolImpl::tick(rtime const &t)
     calculateOwnRole();
     // calculate _good and _error flags
     calculateGood();
-    // send data
+    // send data packet, write _state struct
+    _communication->setPlayerState(_state);
     _communication->sendPlayerPacket(makePacket());
 }
 
@@ -185,7 +190,7 @@ RoleAllocation MixedTeamProtocolImpl::getCurrentRoleAllocation()
         result[player.second.id] = RoleEnum(player.second.packet.role);
     }
     // don't forget self
-    result[_id] = RoleEnum(_role);
+    result[_id] = getOwnRole();
     return result;
 }
 
@@ -194,11 +199,11 @@ void MixedTeamProtocolImpl::calculateOwnRole()
     // gather current role allocation
     auto currentRoles = getCurrentRoleAllocation();
     // run the algorithm
-    RoleAllocationAlgorithm algo(_id, currentRoles, _preferredRole, _preferredRoleFactor);
+    RoleAllocationAlgorithm algo(_id, currentRoles, (mtp::RoleEnum)_state.preferredRole.role, _state.preferredRole.preference);
     tprintf("algorithm result:\n%s", algo.describe().c_str()); // DEBUG
     // handle result
     _error |= algo.error;
-    _role = algo.result.at(_id);
+    _state.currentRole = (int)algo.result.at(_id);
 }
 
 PlayerPacket MixedTeamProtocolImpl::makePacket() const
@@ -208,24 +213,10 @@ PlayerPacket MixedTeamProtocolImpl::makePacket() const
     result.shirt_id = _id.shirtId;
     result.team_id = _id.teamId;
     result.timestamp_ms = int(round(double(_tc - _t0) * 1000));
-    result.self_loc.push_back(_ownPosVel);
+    result.self_loc.push_back(_state.ownPosVel);
     // TODO: balls, obstacles
-    result.role = (uint8_t)_role;
-    result.intention = _intention;
+    result.role = (uint8_t)getOwnRole();
+    result.intention = _state.intention;
     result.error = _error;
-    return result;
-}
-
-PosVel MixedTeamProtocolImpl::toPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence)
-{
-    PosVel result;
-    result.x = position.x;
-    result.y = position.y;
-    result.Rz = position.rz;
-    result.vx = velocity.x;
-    result.vy = velocity.y;
-    result.vRz = velocity.rz;
-    result.confidence = confidence;
-
     return result;
 }

@@ -25,7 +25,7 @@ public:
 
     // getters
     virtual bool good() const = 0; // false in case of errors, in which case robot should remain idle
-    virtual mtp::RoleEnum const &getOwnRole() const = 0; // readable string, rather than the protocol-internal enum
+    virtual mtp::RoleEnum getOwnRole() const = 0;
     virtual std::vector<mtp::TeamMember> getTeam() const = 0; // get all registered team member data
     virtual std::vector<mtp::Object> getBalls() const = 0; // typically 0 or 1 balls
     virtual std::vector<mtp::Object> getObstacles() const = 0;
@@ -58,9 +58,6 @@ public:
     // - (mtp tick -- optional to make data immediately available for other team members)
     // TODO: this story may not be uptodate anymore -- replace it with a reference to a few sequence diagrams
     virtual void tick(rtime const &t) = 0;
-
-    // test interface
-    virtual void setCurrentRole(mtp::RoleEnum const &role) = 0;
 
 }; // end of class Interface
 

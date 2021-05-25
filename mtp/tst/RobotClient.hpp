@@ -3,6 +3,7 @@
 
 // headers from this package
 #include "ext/MixedTeamProtocol.hpp"
+#include "int/Communication.hpp"
 
 // standard/system headers
 // ...
@@ -26,7 +27,7 @@ class RobotClient
 
         // role allocation and conflict resolution
         bool readyToPlay() const;
-        mtp::RoleEnum const &getOwnRole() const;
+        mtp::RoleEnum getOwnRole() const;
         void setCurrentRole(mtp::RoleEnum const &role);
 
         // status report one liner
@@ -38,6 +39,7 @@ class RobotClient
 
     private:
         std::shared_ptr<mtp::MixedTeamProtocol> _mtp;
+        std::shared_ptr<mtp::Communication> _comm;
         float _frequency;
         float _jitter;
 };

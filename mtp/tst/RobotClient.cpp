@@ -9,6 +9,7 @@ RobotClient::RobotClient(mtp::PlayerId const &i, rtime const &t0, float frequenc
 :
     id(i),
     _mtp(std::make_unique<mtp::MixedTeamProtocol>(id)),
+    _comm(std::make_unique<mtp::Communication>(id)),
     _frequency(frequency),
     _jitter(jitter)
 {
@@ -31,19 +32,19 @@ bool RobotClient::readyToPlay() const
     return (*_mtp)->good();
 }
 
-mtp::RoleEnum const &RobotClient::getOwnRole() const
+mtp::RoleEnum RobotClient::getOwnRole() const
 {
     return (*_mtp)->getOwnRole();
 }
 
 void RobotClient::setCurrentRole(mtp::RoleEnum const &role)
 {
-    (*_mtp)->setCurrentRole(role);
+    _comm->setState("CURRENT_ROLE", (int)role);
 }
 
 void RobotClient::setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence)
 {
-    (*_mtp)->setOwnPosVel(position, velocity, confidence);
+    _comm->setState("OWN_POS_VEL", mtp::PosVel(position, velocity, confidence));
 }
 
 std::vector<mtp::TeamMember> RobotClient::getTeam() const

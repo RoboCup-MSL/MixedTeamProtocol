@@ -10,6 +10,9 @@ Communication::Communication(PlayerId const &id)
     _rtdb(_id.shirtId, id.teamId)
 {
     // TODO: how to ensure current id is not already claimed? Rob? Should make requirement + test case in RTDB layer.
+
+    // initialize RTDB state
+    setPlayerState(PlayerState());
 }
 
 Communication::~Communication()
@@ -36,4 +39,22 @@ std::vector<PlayerPacket> Communication::getPlayerPackets()
 void Communication::sendPlayerPacket(PlayerPacket const &packet)
 {
     _rtdb.put("MTP", &packet);
+}
+
+PlayerState Communication::getPlayerState()
+{
+    PlayerState result;
+    _rtdb.get<int>("CURRENT_ROLE", &result.currentRole);
+    _rtdb.get("PREFERRED_ROLE", &result.preferredRole);
+    _rtdb.get("INTENTION", &result.intention);
+    _rtdb.get("OWN_POS_VEL", &result.ownPosVel);
+    return result;
+}
+
+void Communication::setPlayerState(PlayerState const &state)
+{
+    _rtdb.put("CURRENT_ROLE", &state.currentRole);
+    _rtdb.put("PREFERRED_ROLE", &state.preferredRole);
+    _rtdb.put("INTENTION", &state.intention);
+    _rtdb.put("OWN_POS_VEL", &state.ownPosVel);
 }

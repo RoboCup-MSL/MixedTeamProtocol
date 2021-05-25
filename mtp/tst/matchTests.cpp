@@ -6,6 +6,28 @@
 
 class MatchTest : public mtp::TestCase { };
 
+TEST_F(MatchTest, SingleRobotSingleTick)
+{
+    // setup
+    MatchSimulation m;
+    m.addRobot(mtp::PlayerId(1, 1, 'A'));
+
+    // run
+    m.advanceTick();
+
+    // no checks - this is mainly a profiling test case
+    // typical use:
+    // * make sure uftrace is installed
+    // * compile with -pg
+    // * run command:
+    //   uftrace record build/mtp/matchTests --gtest_filter=MatchTest.SingleRobotSingleTick
+    // * run command:
+    //   uftrace dump --chrome > /tmp/uftrace.json
+    // * start browser: google-chrome
+    // * browse to chrome://tracing/
+    // * click 'load' and select the uftrace json file
+}
+
 TEST_F(MatchTest, TwoMixedTeamsInitialPhase)
 {
     // setup

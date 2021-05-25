@@ -24,7 +24,7 @@ public:
 
     // implementation of the API
     bool good() const;
-    mtp::RoleEnum const &getOwnRole() const;
+    mtp::RoleEnum getOwnRole() const;
     std::vector<mtp::TeamMember> getTeam() const;
     std::vector<mtp::Object> getBalls() const;
     std::vector<mtp::Object> getObstacles() const;
@@ -39,23 +39,20 @@ public:
     void start();
     void stop();
     void tick(rtime const &t);
-    void setCurrentRole(mtp::RoleEnum const &role);
 
 private:
-    // data members
+    // state data member are bundled in a single RTDB key
+    mtp::PlayerState _state;
+
+    // other data members
     bool _good = false;
     PlayerId _id;
     bool _started = false;
     rtime _t0, _tc;
-    RoleEnum _role = RoleEnum::UNDEFINED;
-    uint8_t _intention = 0;
     uint8_t _error = 0;
     std::default_random_engine _rng;
-    RoleEnum _preferredRole = RoleEnum::UNDEFINED;
-    float _preferredRoleFactor = 0.0;
     std::shared_ptr<Communication> _communication;
     std::map<ClientType, Player> _players;
-    PosVel _ownPosVel = { 0 };
 
     // functions
     void updatePlayers(std::vector<PlayerPacket> packets);

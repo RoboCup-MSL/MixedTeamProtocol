@@ -3,7 +3,9 @@
 
 // standard/system headers
 #include <vector>
-#include <cstdint>
+
+// headers from this package
+#include "Pose.hpp"
 
 // other MSL packages
 #include "RtDB2.h" // for serialization
@@ -39,13 +41,34 @@ struct PosVel
 {
     float x = 0.0;
     float y = 0.0;
-    float Rz = 0.0;
+    float rz = 0.0;
     float vx = 0.0;
     float vy = 0.0;
-    float vRz = 0.0;
+    float vrz = 0.0;
     float confidence = 0.0;
 
-    SERIALIZE_DATA(x, y, Rz, vx, vy, vRz, confidence);
+    PosVel(float x_ = 0.0, float y_ = 0.0, float rz_ = 0.0, float vx_ = 0.0, float vy_ = 0.0, float vrz_ = 0.0, float confidence_ = 0.0)
+    {
+        x = x_;
+        y = y_;
+        rz = rz_;
+        vx = vx_;
+        vy = vy_;
+        vrz = vrz_;
+        confidence = confidence_;
+    }
+    PosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence_)
+    {
+        x = position.x;
+        y = position.y;
+        rz = position.rz;
+        vx = velocity.x;
+        vy = velocity.y;
+        vrz = velocity.rz;
+        confidence = confidence_;
+    }
+
+    SERIALIZE_DATA(x, y, rz, vx, vy, vrz, confidence);
 }; // end of struct PosVel
 
 struct PlayerPacket
