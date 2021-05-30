@@ -69,7 +69,8 @@ int main(int argc, char **argv)
     {
         myPreferredRoleFactor = 1.0; // TODO: allow more options?
     }
-    auto r = mtp::RoleAllocationAlgorithm(myId, currentRoles, myPreferredRole, myPreferredRoleFactor);
+    auto r = mtp::RoleAllocationAlgorithmBruteForce(myId, currentRoles, myPreferredRole, myPreferredRoleFactor);
+    r.run();
     std::cout << " done ..." << std::endl;
 
     // print algorithm result versus input

@@ -12,7 +12,7 @@ if os.path.isfile('testRoleAllocation'):
     CMD_NAME = './testRoleAllocation'
 else:
     # MTP repo situation
-    CMD_NAME = '../../build/mtp/testRoleAllocation'
+    CMD_NAME = os.path.realpath(__file__) + '/../../build/mtp/testRoleAllocation'
 
 
 def run_cmd(args):

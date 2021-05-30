@@ -16,7 +16,8 @@ add_library(mixedTeamProtocol
     src/Communication.cpp
     src/AdapterRTDB.cpp
     src/Roles.cpp
-    src/RoleAllocation.cpp
+    src/RoleAllocation/RoleAllocation.cpp
+    src/RoleAllocation/BruteForce.cpp
     src/PlayerId.cpp
     src/Player.cpp)
 add_library(MTP::mixedTeamProtocol ALIAS mixedTeamProtocol)

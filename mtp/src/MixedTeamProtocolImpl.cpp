@@ -199,7 +199,8 @@ void MixedTeamProtocolImpl::calculateOwnRole()
     // gather current role allocation
     auto currentRoles = getCurrentRoleAllocation();
     // run the algorithm
-    RoleAllocationAlgorithm algo(_id, currentRoles, (mtp::RoleEnum)_state.preferredRole.role, _state.preferredRole.preference);
+    RoleAllocationAlgorithmBruteForce algo(_id, currentRoles, (mtp::RoleEnum)_state.preferredRole.role, _state.preferredRole.preference);
+    algo.run();
     tprintf("algorithm result:\n%s", algo.describe().c_str()); // DEBUG
     // handle result
     _error |= algo.error;

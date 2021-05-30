@@ -5,8 +5,8 @@ namespace mtp
 {
 
 // use single bits so errors can be combined 
-const int ERROR_BAD_ROLE_ELSEWHERE = 1;
-const int ERROR_BAD_ROLE_SELF = 2;
+const int ERROR_UNINITIALIZED = 1;
+const int ERROR_BAD_ROLE = 2;
 const int ERROR_SHIRT_CONFLICT = 4;
 
 } // end of namespace mtp
