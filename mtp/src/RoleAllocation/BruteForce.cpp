@@ -82,7 +82,7 @@ float RoleAllocationAlgorithmBruteForce::calculatePenalty(RoleAllocation const &
     bool validTeam = checkRoleCount(count); // TODO upstream, remove all invalid candidates earlier
     auto myRole = candidate.at(_myId);
     bool validSelf = checkRoleCount(myRole, count.at(myRole));
-    bool preferred = (candidate.at(_myId) == _myPreferredRole);
+    bool preferred = (myRole == _myPreferredRole);
     int difference = 0;
     for (auto const &rp: candidate)
     {
