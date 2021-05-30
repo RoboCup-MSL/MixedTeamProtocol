@@ -6,9 +6,9 @@
 
 using namespace mtp;
 
-AdapterRTDB::AdapterRTDB(ClientType id, char teamId)
+AdapterRTDB::AdapterRTDB(PlayerId const &id, std::string const &dbname, bool path_encoding)
 :
-    RtDB2(RtDB2Context::Builder(id).withoutConfigFile().withRootPath(MTP_RTDB_STORAGE_PATH + std::string("_") + std::string(1, teamId)).build())
+    RtDB2(createContext(id, dbname, path_encoding))
 {
     auto const &c = getContext();
     std::ostringstream os;
@@ -36,4 +36,20 @@ std::set<ClientType> AdapterRTDB::getClients() // TODO: const
         }
     }
     return result;
+}
+
+RtDB2Context AdapterRTDB::createContext(PlayerId const &id, std::string const &dbname, bool path_encoding)
+{
+    if (path_encoding)
+    {
+        return RtDB2Context::Builder(id.shirtId)
+            .withoutConfigFile()
+            .withRootPath(MTP_RTDB_STORAGE_PATH +
+                std::string(dbname) +
+                std::string("_") +
+                std::string(1, id.teamId)).build();
+    }
+    return RtDB2Context::Builder(id.shirtId)
+            .withoutConfigFile()
+            .withDatabase(dbname).build();
 }

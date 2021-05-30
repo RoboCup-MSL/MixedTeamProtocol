@@ -15,7 +15,7 @@ namespace mtp
 class Communication
 {
 public:
-    Communication(PlayerId const &id);
+    Communication(PlayerId const &id, bool path_encoding = false);
     ~Communication();
 
     std::vector<PlayerPacket> getPlayerPackets();
