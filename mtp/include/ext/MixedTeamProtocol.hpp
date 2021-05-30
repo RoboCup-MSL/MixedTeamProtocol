@@ -11,6 +11,7 @@
 #include "Pose.hpp"
 #include "Roles.hpp"
 #include "PlayerId.hpp"
+#include "Referee.hpp"
 
 // headers from rtdb3 package
 #include "rtime.hpp" // rtime is a timestamp
@@ -29,6 +30,7 @@ public:
     virtual std::vector<mtp::TeamMember> getTeam() const = 0; // get all registered team member data
     virtual std::vector<mtp::Object> getBalls() const = 0; // typically 0 or 1 balls
     virtual std::vector<mtp::Object> getObstacles() const = 0;
+    virtual RefereeCommand getLastCommand() const = 0;
 
     // worldModel setters
     virtual void setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence) = 0;

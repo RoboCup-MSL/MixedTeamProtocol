@@ -15,6 +15,7 @@ add_library(mixedTeamProtocol
     src/MixedTeamProtocolImpl.cpp
     src/Communication.cpp
     src/AdapterRTDB.cpp
+    src/Referee.cpp
     src/Roles.cpp
     src/RoleAllocation.cpp
     src/PlayerId.cpp
