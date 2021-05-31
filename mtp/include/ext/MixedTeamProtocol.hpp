@@ -67,8 +67,8 @@ private:
     std::unique_ptr<Interface> impl;
 
 public:
-    // path_encoding causes the database name to be root of the root path:
-    // - false: /tmp/rtdb2_storage/<id>/database/...
+    // path_encoding causes the database name to be part of the root path:
+    // - false: /tmp/rtdb2_storage/<id>/<database>/...
     // - true:  /tmp/rtdb_<database>/<id>/default/...
     MixedTeamProtocol(PlayerId const &id, bool path_encoding = false);
 
