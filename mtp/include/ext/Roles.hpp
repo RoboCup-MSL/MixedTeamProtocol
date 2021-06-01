@@ -33,6 +33,7 @@ bool checkRoleCount(RoleEnum role, int count); // true == ok
 typedef std::map<RoleEnum, int> RoleCount;
 bool checkRoleCount(RoleCount const &roleCount); // true == ok
 std::vector<RoleEnum> calculateAvailableRoles(RoleCount const &assignedRoleCount);
+void getMinMaxRoleCount(RoleEnum role, int &minCount, int &maxCount);
 
 } // end of namespace mtp
 

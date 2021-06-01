@@ -67,6 +67,18 @@ private:
 
 }; // end of class RoleAllocationAlgorithmBruteForce
 
+class RoleAllocationAlgorithmLinearProgramming: public RoleAllocationAlgorithm
+{
+public:
+    // TODO desc
+    using RoleAllocationAlgorithm::RoleAllocationAlgorithm;
+
+    void _run();
+
+private:
+
+}; // end of class RoleAllocationAlgorithmLinearProgramming
+
 } // end of namespace mtp
 
 #endif
