@@ -9,7 +9,7 @@ RobotClient::RobotClient(mtp::PlayerId const &i, rtime const &t0, float frequenc
 :
     id(i),
     _mtp(std::make_unique<mtp::MixedTeamProtocol>(id, true)),
-    _comm(std::make_unique<mtp::Communication>(id)),
+    _comm(std::make_unique<mtp::Communication>(id, true)),
     _frequency(frequency),
     _jitter(jitter)
 {
