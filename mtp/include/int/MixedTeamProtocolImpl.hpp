@@ -19,7 +19,7 @@ namespace mtp
 class MixedTeamProtocolImpl: public Interface
 {
 public:
-    MixedTeamProtocolImpl(PlayerId const &id);
+    MixedTeamProtocolImpl(PlayerId const &id, bool path_encoding = false);
     ~MixedTeamProtocolImpl();
 
     // implementation of the API

@@ -4,10 +4,10 @@
 using namespace mtp;
 
 
-Communication::Communication(PlayerId const &id)
+Communication::Communication(PlayerId const &id, bool path_encoding)
 :
     _id(id),
-    _rtdb(_id.shirtId, id.teamId)
+    _rtdb(id, "mixedteam", path_encoding)
 {
     // TODO: how to ensure current id is not already claimed? Rob? Should make requirement + test case in RTDB layer.
 
