@@ -17,8 +17,8 @@
 
 
 using namespace mtp;
-
 using namespace operations_research;
+
 
 void RoleAllocationAlgorithmLinearProgramming::_run()
 {
@@ -38,7 +38,7 @@ void RoleAllocationAlgorithmLinearProgramming::_run()
     int P = (int)players.size(); // typically 5, may grow towards 11 in future
     auto roles = allAssignableRoles();
     int R = (int)roles.size(); // about 8
-    tprintf("P=%d R=%d", P, R);
+    //tprintf("P=%d R=%d", P, R);
 
     // a role assignment is a pair (player, role) with a boolean value
     // so all possible role assignments are in the cartesian product, size P*R
@@ -91,12 +91,12 @@ void RoleAllocationAlgorithmLinearProgramming::_run()
 
     // solve
     const MPSolver::ResultStatus result_status = solver->Solve();
-    tprintf("SOLVED");
 
     // check and convert solution
+    result.clear();
     if (result_status != MPSolver::OPTIMAL && result_status != MPSolver::FEASIBLE)
     {
-        LOG(FATAL) << "No solution found.";
+        return; // no solution found
     }
     for (int p = 0; p < P; ++p)
     {
@@ -104,7 +104,7 @@ void RoleAllocationAlgorithmLinearProgramming::_run()
         {
             if (variables.at(p).at(r)->solution_value() > 0.5)
             {
-                LOG(INFO) << "Player " << p << " (" << players.at(p).describe() << ") assigned to role " << roleEnumToString(roles.at(r));
+                result[players.at(p)] = roles.at(r);
             }
         }
     }

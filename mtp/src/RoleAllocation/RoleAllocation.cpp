@@ -1,6 +1,9 @@
 // header implemented in this file
 #include "int/RoleAllocation.hpp"
 
+// headers from other packages
+#include "tprintf.hpp"
+
 // system headers
 #include <cmath>
 #include <sstream>
