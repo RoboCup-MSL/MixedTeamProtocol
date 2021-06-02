@@ -32,8 +32,8 @@ public:
         // first determine the location of a helper script, which resides in the tst directory next to this file
         std::filesystem::path p(__FILE__);
         std::string command = std::string(p.parent_path()) + "/databaseLinkTrick.py";
-        command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "_A";
-        command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "_B";
+        command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "mixedteam_A";
+        command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "mixedteam_B";
         tprintf("running command: %s", command.c_str())
         system(command.c_str());
     };
@@ -41,8 +41,8 @@ public:
     ~TestCase()
     {
         std::string command = "rm -rf";
-        command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "_A";
-        command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "_B";
+        command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "mixedteam_A";
+        command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "mixedteam_B";
         if (command.size() > 20) // a little precaution in case for some reason the string would evaluate to "rm -rf /tmp" or something
         {
             tprintf("running command: %s", command.c_str())

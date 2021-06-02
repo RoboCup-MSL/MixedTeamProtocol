@@ -12,10 +12,10 @@
 
 using namespace mtp;
 
-MixedTeamProtocolImpl::MixedTeamProtocolImpl(PlayerId const &id)
+MixedTeamProtocolImpl::MixedTeamProtocolImpl(PlayerId const &id, bool path_encoding)
 :
     _id(id),
-    _communication(std::make_shared<Communication>(id))
+    _communication(std::make_shared<Communication>(id, path_encoding))
 {
     _rng.seed(_id.hash());
 }

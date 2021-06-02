@@ -8,7 +8,7 @@
 RobotClient::RobotClient(mtp::PlayerId const &i, rtime const &t0, float frequency, float jitter)
 :
     id(i),
-    _mtp(i),
+    _mtp(i, true),
     _frequency(frequency),
     _jitter(jitter)
 {
