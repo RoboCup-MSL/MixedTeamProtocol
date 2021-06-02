@@ -45,8 +45,8 @@ TEST_F(MatchTest, TwoMixedTeamsInitialPhase)
     m.addRobot(mtp::PlayerId(2, 5, 'A'));
 
     // run
-    // 1 simulated second should be enough time for robots to decide on a role allocation
-    m.advanceDuration(1.0);
+    // 3 simulated ticks should be enough time for robots to decide on a role allocation
+    m.advanceTicks(3);
 
     // assert
     MatchSimulationChecks t(m);

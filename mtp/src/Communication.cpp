@@ -26,11 +26,22 @@ std::vector<PlayerPacket> Communication::getPlayerPackets()
     for (auto& client: clients)
     {
         PlayerPacket packet;
-        int r = _rtdb.get("MTP", &packet, client);
+
+        int r = _rtdb.get("MTP", &packet, client); // too slow?!!!
         if (r == RTDB2_SUCCESS) // TODO: revise RTDB API in v3 to not return magic int values, instead, apply exception handling
         {
             // same-team checks and timeout checks are done in Player packet handler
             result.push_back(packet);
+        }
+        else
+        {
+            if (r == RTDB2_ITEM_STALE)
+            {
+                RtDB2Item item;
+                _rtdb.getItem("MTP", item);
+                tprintf("WARNING: timeout (age %.2fs): could not read MTP packet for client %d at %s", item.age(), client, _id.describe().c_str());
+            }
+            // if only RTDB would just throw clear exceptions. TODO
         }
     }
     return result;
