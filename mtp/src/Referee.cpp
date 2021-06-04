@@ -4,7 +4,7 @@
 // standard/system headers
 #include <boost/bimap.hpp>
 #include <boost/assign.hpp>
-
+#include <iostream>
 
 using namespace mtp;
 
@@ -57,6 +57,16 @@ std::string mtp::commandEnumToString(CommandEnum &c)
 
 CommandEnum mtp::commandStringToEnum(std::string s)
 {
+    if (s.compare("") == 0)
+    {
+        return CommandEnum::NONE;
+    }
+    bm_command_type::right_const_iterator it = commandEnumToStringBiMap.right.find(s);
+    if (it == commandEnumToStringBiMap.right.end())
+    {
+        std::cerr << "commandStringToEnum| Not found: " << s << std::endl;
+        return CommandEnum::NONE;
+    }
     return commandEnumToStringBiMap.right.at(s);
 }
 
@@ -67,5 +77,15 @@ std::string mtp::targetEnumToString(TargetEnum &t)
 
 TargetEnum mtp::targetStringToEnum(std::string s)
 {
+    if (s.compare("") == 0)
+    {
+        return TargetEnum::ALL;
+    }
+    bm_target_type::right_const_iterator it = targetEnumToStringBiMap.right.find(s);
+    if (it == targetEnumToStringBiMap.right.end())
+    {
+        std::cerr << "targetStringToEnum| Not found: " << s << std::endl;
+        return TargetEnum::ALL;
+    }
     return targetEnumToStringBiMap.right.at(s);
 }
