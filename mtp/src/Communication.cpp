@@ -43,10 +43,10 @@ RefereeCommand Communication::getLastCommand()
 {
     std::string command;
     std::string target;
-    bool success = (_rtdbRefbox.get("COMMAND", &command) == RTDB2_SUCCESS) &&
-                   (_rtdbRefbox.get("TARGETTEAM", &target) == RTDB2_SUCCESS);
+    bool success = (_rtdbRefbox.get("COMMAND", &command, 0) == RTDB2_SUCCESS) &&
+                   (_rtdbRefbox.get("TARGETTEAM", &target, 0) == RTDB2_SUCCESS);
     RefereeCommand result;
-    if (success == RTDB2_SUCCESS)
+    if (success)
     {
         result.command = commandStringToEnum(command);
         result.target = targetStringToEnum(target);
