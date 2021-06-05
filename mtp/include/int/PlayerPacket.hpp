@@ -54,6 +54,7 @@ struct PlayerPacket
     uint8_t                shirt_id = 0;
     char                   team_id = '?';
     int32_t                timestamp_ms = 0;
+    uint8_t                has_ball = 0;
     std::vector<Ball>      balls;
     std::vector<Obstacle>  obstacles;
     std::vector<PosVel>    self_loc;
@@ -62,7 +63,7 @@ struct PlayerPacket
     uint8_t                intention = 0;
     uint8_t                error = 0;
 
-    SERIALIZE_DATA(vendor_id, shirt_id, team_id, timestamp_ms, balls, obstacles, self_loc, role, intention, error);
+    SERIALIZE_DATA(vendor_id, shirt_id, team_id, timestamp_ms, has_ball, balls, obstacles, self_loc, role, intention, error);
 }; // end of struct PlayerPacket
 
 } // end of namespace mtp

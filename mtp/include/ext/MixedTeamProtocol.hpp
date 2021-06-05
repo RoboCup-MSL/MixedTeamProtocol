@@ -29,11 +29,13 @@ public:
     virtual mtp::RoleEnum const &getOwnRole() const = 0; // readable string, rather than the protocol-internal enum
     virtual std::vector<mtp::TeamMember> getTeam() const = 0; // get all registered team member data
     virtual std::vector<mtp::Object> getBalls() const = 0; // typically 0 or 1 balls
+    //virtual mtp::BallPossession getBallPossession() const = 0; // TODO how to figure out if ball is possessed by OPPONENT of FIELD? bring worldmodel logic into this library?
     virtual std::vector<mtp::Object> getObstacles() const = 0;
     virtual RefereeCommand getLastCommand() const = 0;
 
     // worldModel setters
     virtual void setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence) = 0;
+    virtual void setOwnBallPossession(bool hasBall) = 0;
     virtual void setOwnBalls(std::vector<mtp::Object> balls) = 0;
     virtual void setOwnObstacles(std::vector<mtp::Object> obstacles) = 0;
     virtual void setHumanTeamMember(mtp::Pose const &position, mtp::Pose const &velocity, float confidence) = 0;

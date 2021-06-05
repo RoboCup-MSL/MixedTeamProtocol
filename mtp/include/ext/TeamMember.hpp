@@ -16,6 +16,7 @@ struct TeamMember
     PlayerId id;
     std::string role;
     std::string intention;
+    bool hasBall;
     Pose position;
     Pose velocity;
 
