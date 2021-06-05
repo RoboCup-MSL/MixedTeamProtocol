@@ -9,7 +9,6 @@
 namespace mtp
 {
 
-typedef std::map<PlayerId, RoleEnum> RoleAllocation;
 RoleCount roleAllocationToCount(RoleAllocation const &roles);
 
 class RoleAllocationAlgorithm

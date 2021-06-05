@@ -77,14 +77,25 @@ void RoleAllocationAlgorithmLinearProgramming::_run()
         solver->MakeRowConstraint(sum <= maxCount);
     }
 
-    // objective function - TODO, for now 1
+    // objective function
+    float OBJECTIVE_COEFFICIENT_DEFAULT = 10.0; // default score for any relation
+    float OBJECTIVE_COEFFICIENT_PREFERENCE = 0.0; // satisfying a preference will lead to a lower score
+    float OBJECTIVE_COEFFICIENT_CURRENT = 5.0; // staying to close current role allocation is also desired
+    // TODO: distance based criteria (when there are multiple options, then robot closest to goal should typically become goalkeeper, etc.)
     MPObjective* const objective = solver->MutableObjective();
-    //std::vector<std::vector<const MPVariable*>> variables(P, std::vector<const MPVariable*>(R));
     for (int p = 0; p < P; ++p)
     {
         for (int r = 0; r < R; ++r)
         {
-            objective->SetCoefficient(variables.at(p).at(r), 1); // TODO
+            objective->SetCoefficient(variables.at(p).at(r), OBJECTIVE_COEFFICIENT_DEFAULT);
+            if (roles.at(r) == _currentRoleAllocation.at(players.at(p)))
+            {
+                objective->SetCoefficient(variables.at(p).at(r), OBJECTIVE_COEFFICIENT_CURRENT);
+            }
+            if (_myPreferredRole != RoleEnum::UNDEFINED && players.at(p) == _myId && roles.at(r) == _myPreferredRole)
+            {
+                objective->SetCoefficient(variables.at(p).at(r), OBJECTIVE_COEFFICIENT_PREFERENCE);
+            }
         }
     }
     objective->SetMinimization();

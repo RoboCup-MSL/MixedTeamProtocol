@@ -6,6 +6,9 @@
 #include <string>
 #include <map>
 
+// other MTP headers
+#include "PlayerId.hpp"
+
 namespace mtp
 {
 
@@ -34,6 +37,9 @@ typedef std::map<RoleEnum, int> RoleCount;
 bool checkRoleCount(RoleCount const &roleCount); // true == ok
 std::vector<RoleEnum> calculateAvailableRoles(RoleCount const &assignedRoleCount);
 void getMinMaxRoleCount(RoleEnum role, int &minCount, int &maxCount);
+
+// role allocation / assignment
+typedef std::map<PlayerId, RoleEnum> RoleAllocation;
 
 } // end of namespace mtp
 
