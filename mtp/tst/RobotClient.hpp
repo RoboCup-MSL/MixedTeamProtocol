@@ -29,6 +29,7 @@ class RobotClient
         bool readyToPlay() const;
         mtp::RoleEnum getOwnRole() const;
         void setCurrentRole(mtp::RoleEnum const &role);
+        void setPreferredRole(mtp::RoleEnum const &role);
 
         // status report one liner
         std::string statusReport() const;

@@ -50,6 +50,25 @@ bool MatchSimulationChecks::checkRoleAllocation() const
     return result;
 }
 
+bool MatchSimulationChecks::checkRoleAllocation(char teamId, mtp::RoleAllocation const &expectedRoles) const
+{
+    for (const auto& p: _m.getPlayers())
+    {
+        auto robot = _m.getRobot(p);
+        if (teamId == robot.id.teamId)
+        {
+            if (!expectedRoles.count(p))
+            {
+                tprintf("ERROR: expectedRoles is incomplete, missing player %s", p.describe().c_str());
+                return false;
+            }
+            if (robot.getOwnRole() != expectedRoles.at(p)) return false;
+        }
+    }
+    return true;
+}
+
+
 bool MatchSimulationChecks::checkTeamMemberCount(char teamId, int expectedCount) const
 {
     int count = 0;

@@ -55,6 +55,60 @@ TEST_F(MatchTest, TwoMixedTeamsInitialPhase)
     EXPECT_TRUE(t.checkRoleAllocation());
 }
 
+void checkRolePreferences3v3(MatchSimulation &m)
+{
+    MatchSimulationChecks t(m);
+    EXPECT_TRUE(t.checkTeamMemberCount('A', 3));
+    EXPECT_TRUE(t.checkTeamMemberCount('B', 3));
+    mtp::RoleAllocation expectedRolesTeamA;
+    expectedRolesTeamA[mtp::PlayerId(1, 1, 'A')] = mtp::RoleEnum::ATTACKER_MAIN;
+    expectedRolesTeamA[mtp::PlayerId(1, 2, 'A')] = mtp::RoleEnum::GOALKEEPER;
+    expectedRolesTeamA[mtp::PlayerId(1, 3, 'A')] = mtp::RoleEnum::DEFENDER_MAIN;
+    mtp::RoleAllocation expectedRolesTeamB;
+    expectedRolesTeamB[mtp::PlayerId(1, 1, 'B')] = mtp::RoleEnum::DEFENDER_MAIN;
+    expectedRolesTeamB[mtp::PlayerId(1, 2, 'B')] = mtp::RoleEnum::ATTACKER_MAIN;
+    expectedRolesTeamB[mtp::PlayerId(1, 3, 'B')] = mtp::RoleEnum::GOALKEEPER;
+    EXPECT_TRUE(t.checkRoleAllocation());
+    EXPECT_TRUE(t.checkRoleAllocation('A', expectedRolesTeamA));
+    EXPECT_TRUE(t.checkRoleAllocation('B', expectedRolesTeamB));
+}
+
+TEST_F(MatchTest, RolePreferences)
+{
+    // setup
+    MatchSimulation m;
+    m.addRobot(mtp::PlayerId(1, 1, 'A'));
+    m.addRobot(mtp::PlayerId(1, 2, 'A')).setPreferredRole(mtp::RoleEnum::GOALKEEPER);
+    m.addRobot(mtp::PlayerId(1, 3, 'A')).setPreferredRole(mtp::RoleEnum::DEFENDER_MAIN);
+    m.addRobot(mtp::PlayerId(2, 1, 'B')).setPreferredRole(mtp::RoleEnum::DEFENDER_MAIN);
+    m.addRobot(mtp::PlayerId(2, 2, 'B')).setPreferredRole(mtp::RoleEnum::ATTACKER_MAIN);
+    m.addRobot(mtp::PlayerId(2, 3, 'B'));
+
+    // run
+    m.advanceTicks(2);
+
+    // assert
+    checkRolePreferences3v3(m);
+}
+
+TEST_F(MatchTest, RoleCurrentStaysSame)
+{
+    // setup
+    MatchSimulation m;
+    m.addRobot(mtp::PlayerId(1, 1, 'A'));
+    m.addRobot(mtp::PlayerId(1, 2, 'A')).setCurrentRole(mtp::RoleEnum::GOALKEEPER);
+    m.addRobot(mtp::PlayerId(1, 3, 'A')).setCurrentRole(mtp::RoleEnum::DEFENDER_MAIN);
+    m.addRobot(mtp::PlayerId(2, 1, 'B')).setCurrentRole(mtp::RoleEnum::DEFENDER_MAIN);
+    m.addRobot(mtp::PlayerId(2, 2, 'B')).setCurrentRole(mtp::RoleEnum::ATTACKER_MAIN);
+    m.addRobot(mtp::PlayerId(2, 3, 'B'));
+
+    // run
+    m.advanceTicks(2);
+
+    // assert
+    checkRolePreferences3v3(m);
+}
+
 TEST_F(MatchTest, WorldModelPosVel)
 {
     // setup
@@ -93,7 +147,7 @@ TEST_F(MatchTest, RoleAllocationNegotationSingleTeamInvalidCurrentState)
     m.addRobot(mtp::PlayerId(1, 4, 'A')).setCurrentRole(mtp::RoleEnum::ATTACKER_GENERIC);
 
     // run
-    m.advanceTicks(2); // let the robots learn of each others existenc and possibly already settle on a role allocation
+    m.advanceTicks(2); // let the robots learn of each others existence and possibly already settle on a role allocation
 
     // again force the given situation
     m.getRobot(mtp::PlayerId(1, 1, 'A')).setCurrentRole(mtp::RoleEnum::ATTACKER_GENERIC);
@@ -104,6 +158,7 @@ TEST_F(MatchTest, RoleAllocationNegotationSingleTeamInvalidCurrentState)
 
     // assert
     MatchSimulationChecks t(m);
+    mtp::RoleAllocation expectedRolesA;
     EXPECT_TRUE(t.checkTeamMemberCount('A', 4));
     EXPECT_TRUE(t.checkTeamMemberCount('B', 0));
     EXPECT_TRUE(t.checkRoleAllocation());

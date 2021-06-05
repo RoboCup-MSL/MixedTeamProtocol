@@ -42,6 +42,14 @@ void RobotClient::setCurrentRole(mtp::RoleEnum const &role)
     _comm->setState("CURRENT_ROLE", (int)role);
 }
 
+void RobotClient::setPreferredRole(mtp::RoleEnum const &role)
+{
+    mtp::PreferredRole pr;
+    pr.role = (int)role;
+    pr.preference = 1.0;
+    _comm->setState("PREFERRED_ROLE", pr);
+}
+
 void RobotClient::setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence)
 {
     _comm->setState("OWN_POS_VEL", mtp::PosVel(position, velocity, confidence));

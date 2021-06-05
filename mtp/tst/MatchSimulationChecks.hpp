@@ -18,7 +18,8 @@ class MatchSimulationChecks
         void setExpectedPosVel(mtp::PlayerId const &playerId, mtp::Pose const &position, mtp::Pose const &velocity);
 
         // checks, true means OK
-        bool checkRoleAllocation() const;
+        bool checkRoleAllocation() const; // basic checks for both teams
+        bool checkRoleAllocation(char teamId, mtp::RoleAllocation const &expectedRoles) const;
         bool checkTeamMemberCount(char teamId, int expectedCount) const;
         bool checkWorldModelPosVel() const; // check that locations are consistent for the interpretation of each robot
 
