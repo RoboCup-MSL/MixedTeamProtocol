@@ -3,6 +3,7 @@
 
 // headers from this package
 #include "ext/PlayerId.hpp"
+#include "ext/Referee.hpp"
 #include "int/PlayerPacket.hpp"
 #include "int/PlayerState.hpp"
 #include "int/AdapterRTDB.hpp"
@@ -45,10 +46,12 @@ public:
     {
         _rtdb.put(key, &value);
     }
+    RefereeCommand getLastCommand();
 
 private:
     PlayerId _id;
     AdapterRTDB _rtdb;
+    AdapterRTDB _rtdbRefbox;
 }; // end of class Communication
 
 } // end of namespace mtp

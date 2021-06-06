@@ -39,6 +39,7 @@ std::vector<mtp::TeamMember> MixedTeamProtocolImpl::getTeam() const
     std::vector<mtp::TeamMember> result;
     for (auto const &player: _players)
     {
+        // convert player packet to TeamMember
         mtp::TeamMember t(player.second.id);
         t.role = roleEnumToString((mtp::RoleEnum)player.second.packet.role);
         if (!player.second.packet.self_loc.empty()) {
@@ -51,6 +52,7 @@ std::vector<mtp::TeamMember> MixedTeamProtocolImpl::getTeam() const
             t.velocity.rz = pv.vrz;
             // TODO: what to do with confidence?
         }
+        t.hasBall = player.second.packet.has_ball;
         // TODO: set t.intention
         result.push_back(t);
     }
@@ -65,6 +67,11 @@ std::vector<mtp::Object> MixedTeamProtocolImpl::getBalls() const
 std::vector<mtp::Object> MixedTeamProtocolImpl::getObstacles() const
 {
     return std::vector<mtp::Object>();
+}
+
+RefereeCommand MixedTeamProtocolImpl::getLastCommand() const
+{
+    return _communication->getLastCommand();
 }
 
 void MixedTeamProtocolImpl::setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence)
@@ -82,6 +89,11 @@ void MixedTeamProtocolImpl::setOwnPosVel(mtp::Pose const &position, mtp::Pose co
 
 void MixedTeamProtocolImpl::setOwnBalls(std::vector<mtp::Object> balls)
 {
+}
+
+void MixedTeamProtocolImpl::setOwnBallPossession(bool hasBall)
+{
+    _communication->setState("HAS_BALL", hasBall);
 }
 
 void MixedTeamProtocolImpl::setOwnObstacles(std::vector<mtp::Object> obstacles)
@@ -222,6 +234,7 @@ PlayerPacket MixedTeamProtocolImpl::makePacket() const
     result.team_id = _id.teamId;
     result.timestamp_ms = int(round(double(_tc - _t0) * 1000));
     result.self_loc.push_back(_state.ownPosVel);
+    result.self_loc.push_back(_state.hasBall);
     // TODO: balls, obstacles
     result.role = (uint8_t)getOwnRole();
     result.intention = _state.intention;

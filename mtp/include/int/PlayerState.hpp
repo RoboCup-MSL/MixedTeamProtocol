@@ -28,8 +28,9 @@ struct PlayerState
     PreferredRole preferredRole;
     int intention = 0;
     PosVel ownPosVel;
+    bool hasBall = false;
 
-    SERIALIZE_DATA(currentRole, preferredRole, intention, ownPosVel);
+    SERIALIZE_DATA(currentRole, preferredRole, intention, ownPosVel, hasBall);
 }; // end of struct PlayerState
 
 } // end of namespace mtp

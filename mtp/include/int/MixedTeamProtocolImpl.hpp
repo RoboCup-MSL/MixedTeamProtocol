@@ -4,6 +4,7 @@
 // headers from this package
 #include "ext/MixedTeamProtocol.hpp"
 #include "ext/PlayerId.hpp"
+#include "ext/Referee.hpp"
 #include "ext/Roles.hpp"
 #include "int/PlayerPacket.hpp"
 #include "int/Player.hpp"
@@ -27,9 +28,12 @@ public:
     mtp::RoleEnum getOwnRole() const;
     std::vector<mtp::TeamMember> getTeam() const;
     std::vector<mtp::Object> getBalls() const;
+    //mtp::BallPossession getBallPossession() const;
     std::vector<mtp::Object> getObstacles() const;
+    RefereeCommand getLastCommand() const;
     void setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence);
     void setOwnBalls(std::vector<mtp::Object> balls);
+    void setOwnBallPossession(bool hasBall);
     void setOwnObstacles(std::vector<mtp::Object> obstacles);
     void setHumanTeamMember(mtp::Pose const &position, mtp::Pose const &velocity, float confidence);
     void setOwnIntention(std::string intention);

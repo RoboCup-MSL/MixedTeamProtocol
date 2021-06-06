@@ -42,8 +42,8 @@ class TestNoArguments(RoleAllocationTestCase):
         expected = """Running algorithm ... done ...
 Result code: 0
 Result allocation:
-  [self] vendor=1  shirt=1  team=A hash=1     : DEFENDER_MAIN       (UNDEFINED)         
-         vendor=1  shirt=2  team=A hash=2     : ATTACKER_GENERIC    (UNDEFINED)         
+  [self] vendor=1  shirt=1  team=A hash=1     : DEFENDER_GENERIC    (UNDEFINED)         
+         vendor=1  shirt=2  team=A hash=2     : DEFENDER_MAIN       (UNDEFINED)         
          vendor=1  shirt=3  team=A hash=3     : ATTACKER_ASSIST     (UNDEFINED)         
          vendor=1  shirt=4  team=A hash=4     : ATTACKER_MAIN       (UNDEFINED)         
          vendor=1  shirt=5  team=A hash=5     : GOALKEEPER          (UNDEFINED)"""
@@ -62,8 +62,8 @@ class TestCurrentGoalie(RoleAllocationTestCase):
 Result code: 0
 Result allocation:
   [self] vendor=1  shirt=1  team=A hash=1     : GOALKEEPER          (GOALKEEPER)        
-         vendor=1  shirt=2  team=A hash=2     : DEFENDER_MAIN       (UNDEFINED)         
-         vendor=1  shirt=3  team=A hash=3     : ATTACKER_GENERIC    (UNDEFINED)         
+         vendor=1  shirt=2  team=A hash=2     : DEFENDER_GENERIC    (UNDEFINED)         
+         vendor=1  shirt=3  team=A hash=3     : DEFENDER_MAIN       (UNDEFINED)         
          vendor=1  shirt=4  team=A hash=4     : ATTACKER_ASSIST     (UNDEFINED)         
          vendor=1  shirt=5  team=A hash=5     : ATTACKER_MAIN       (UNDEFINED)"""
         self.assertEqual(output.strip(), expected.strip())
@@ -80,7 +80,7 @@ class TestCurrentDefender(RoleAllocationTestCase):
 Result code: 0
 Result allocation:
   [self] vendor=1  shirt=1  team=A hash=1     : DEFENDER_MAIN       (DEFENDER_MAIN)     
-         vendor=1  shirt=2  team=A hash=2     : ATTACKER_GENERIC    (UNDEFINED)         
+         vendor=1  shirt=2  team=A hash=2     : DEFENDER_GENERIC    (UNDEFINED)         
          vendor=1  shirt=3  team=A hash=3     : ATTACKER_ASSIST     (UNDEFINED)         
          vendor=1  shirt=4  team=A hash=4     : ATTACKER_MAIN       (UNDEFINED)         
          vendor=1  shirt=5  team=A hash=5     : GOALKEEPER          (UNDEFINED)"""

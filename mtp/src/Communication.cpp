@@ -7,7 +7,8 @@ using namespace mtp;
 Communication::Communication(PlayerId const &id, bool path_encoding)
 :
     _id(id),
-    _rtdb(id, "mixedteam", path_encoding)
+    _rtdb(id, "mixedteam", path_encoding),
+    _rtdbRefbox(id, "refbox", path_encoding)
 {
     // TODO: how to ensure current id is not already claimed? Rob? Should make requirement + test case in RTDB layer.
 
@@ -59,6 +60,7 @@ PlayerState Communication::getPlayerState()
     _rtdb.get("PREFERRED_ROLE", &result.preferredRole);
     _rtdb.get("INTENTION", &result.intention);
     _rtdb.get("OWN_POS_VEL", &result.ownPosVel);
+    _rtdb.get("HAS_BALL", &result.hasBall);
     return result;
 }
 
@@ -68,4 +70,20 @@ void Communication::setPlayerState(PlayerState const &state)
     _rtdb.put("PREFERRED_ROLE", &state.preferredRole);
     _rtdb.put("INTENTION", &state.intention);
     _rtdb.put("OWN_POS_VEL", &state.ownPosVel);
+    _rtdb.put("HAS_BALL", &state.hasBall);
+}
+
+RefereeCommand Communication::getLastCommand()
+{
+    std::string command;
+    std::string target;
+    bool success = (_rtdbRefbox.get("COMMAND", &command, 0) == RTDB2_SUCCESS) &&
+                   (_rtdbRefbox.get("TARGETTEAM", &target, 0) == RTDB2_SUCCESS);
+    RefereeCommand result;
+    if (success)
+    {
+        result.command = commandStringToEnum(command);
+        result.target = targetStringToEnum(target);
+    }
+    return result;
 }
