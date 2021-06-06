@@ -21,6 +21,9 @@ RobotClient::~RobotClient()
 
 void RobotClient::tick(rtime const &t)
 {
+    if (id.shirtId == 1) {
+        _mtp->setPreferredOwnRole(mtp::RoleEnum::GOALKEEPER, 1);
+    }
     _mtp->setCurrentTime(t);
     _mtp->tick(t);
 }

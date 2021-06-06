@@ -46,18 +46,17 @@ void MatchSimulation::setPosVel(mtp::PlayerId const &playerId, mtp::Pose const &
 
 void MatchSimulation::advance(float duration)
 {
-    rtime t = _t0;
     rtime te = _t0 + duration;
     float dt = 0.1;
-    while (t < te)
+    while (_t0 < te)
     {
-        t += dt;
+        _t0 += dt;
         printf("\n");
-        printf("simulation step START timestamp: %s\n", t.toStr().c_str());
+        printf("simulation step START timestamp: %s\n", _t0.toStr().c_str());
         // poke robots
         for (auto& robot: _robots)
         {
-            robot->tick(t);
+            robot->tick(_t0);
         }
         report();
     }

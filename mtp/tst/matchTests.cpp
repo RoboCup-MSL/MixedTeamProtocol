@@ -30,6 +30,8 @@ TEST_F(MatchTest, TwoMixedTeamsInitialPhase)
         pos.x = ((float)rand() / RAND_MAX);
         pos.y = ((float)rand() / RAND_MAX);
         m.setPosVel(p, pos, pos, 0);
+
+        m.advance(0.1);
     }
 
     // run
