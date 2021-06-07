@@ -31,6 +31,7 @@ TEST_F(MatchTest, TwoMixedTeamsInitialPhase)
         pos.y = ((float)rand() / RAND_MAX);
         m.setPosVel(p, pos, pos, 0);
 
+        // simulate that robots are entering the party one by one
         m.advance(0.1);
     }
 
