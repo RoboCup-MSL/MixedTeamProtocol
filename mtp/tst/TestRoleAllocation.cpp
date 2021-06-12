@@ -79,6 +79,10 @@ int main(int argc, char **argv)
     {
         algo = new mtp::RoleAllocationAlgorithmLinearProgramming(myId, currentRoles, myPreferredRole, myPreferredRoleFactor);
     }
+    else if (vm.at("solver").as<std::string>() == "MUNKRES")
+    {
+        algo = new mtp::RoleAllocationAlgorithmKuhnMunkres(myId, currentRoles, myPreferredRole, myPreferredRoleFactor);
+    }
     else
     {
         std::cerr << "invalid solver: " << vm.at("solver").as<std::string>() << std::endl;

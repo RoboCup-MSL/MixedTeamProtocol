@@ -69,7 +69,9 @@ private:
 class RoleAllocationAlgorithmLinearProgramming: public RoleAllocationAlgorithm
 {
 public:
-    // TODO desc
+    // linear programming: take constraints into account and find the best role
+    // this is the most general and flexible algorithm, but perhaps a bit overkill for our use case
+    // and the underlying Google OR-tools library is not easy to install
     using RoleAllocationAlgorithm::RoleAllocationAlgorithm;
 
     void _run();
@@ -77,6 +79,20 @@ public:
 private:
 
 }; // end of class RoleAllocationAlgorithmLinearProgramming
+
+class RoleAllocationAlgorithmKuhnMunkres: public RoleAllocationAlgorithm
+{
+public:
+    // this variant uses the standard Kuhn-Munkres algorithm (also known as Hungarian algorithm)
+    // it is slightly less versatile as LinearProgramming, but much more faster and good enough for now
+    // it is also much easier to install than Google OR-tools
+    using RoleAllocationAlgorithm::RoleAllocationAlgorithm;
+
+    void _run();
+
+private:
+
+}; // end of class RoleAllocationAlgorithmKuhnMunkres
 
 } // end of namespace mtp
 

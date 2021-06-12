@@ -28,6 +28,7 @@ add_library(mixedTeamProtocol
     src/RoleAllocation/RoleAllocation.cpp
     src/RoleAllocation/BruteForce.cpp
     src/RoleAllocation/LinearProgramming.cpp
+    src/RoleAllocation/KuhnMunkres.cpp
     src/PlayerId.cpp
     src/Player.cpp)
 add_library(MTP::mixedTeamProtocol ALIAS mixedTeamProtocol)

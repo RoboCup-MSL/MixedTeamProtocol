@@ -10,6 +10,9 @@ After cloning, just run the following command once:
 
 Also required:
 * apt packages `libgtest-dev` and `libgmock-dev`
+* an installation of the Munkres algorithm
+  * manual instructions: see the 3 steps on https://github.com/saebyn/munkres-cpp#usage
+  * TODO: automate via (build) script or cmake config?
 
 # Build and test
 To build: run `build.sh`.
