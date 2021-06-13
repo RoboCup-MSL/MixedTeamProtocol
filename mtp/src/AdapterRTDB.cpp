@@ -16,7 +16,7 @@ AdapterRTDB::AdapterRTDB(PlayerId const &id, std::string const &dbname, bool pat
     auto const &c = getContext();
     std::ostringstream os;
     os << c;
-    tprintf("RTDB configuration:\n%s", os.str().c_str()); // TODO: put this behind a MTP_VERBOSE compilation flag?
+    //tprintf("RTDB configuration:\n%s", os.str().c_str()); // TODO: put this behind a MTP_VERBOSE compilation flag?
 }
 
 AdapterRTDB::~AdapterRTDB()
