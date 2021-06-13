@@ -16,7 +16,7 @@ TEST_F(MatchTest, SingleRobotSingleTick)
     m.advanceTick();
 
     // no checks - this is mainly a profiling test case
-    // typical use:
+    // typical use (see also build.py --trace option, for automating all of this):
     // * make sure uftrace is installed
     // * compile with -pg
     // * run command:

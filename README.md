@@ -15,9 +15,9 @@ Also required:
   * TODO: automate via (build) script or cmake config?
 
 # Build and test
-To build: run `build.sh`.
+To build: run `build.py`.
 
-To test: run `build.sh test`.
+To test: run `build.py --test`.
 
 
 
