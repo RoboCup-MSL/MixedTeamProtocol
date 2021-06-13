@@ -31,8 +31,10 @@ class RobotClient
         void setCurrentRole(mtp::RoleEnum const &role);
         void setPreferredRole(mtp::RoleEnum const &role);
 
-        // status report one liner
-        std::string statusReport() const;
+        // status report
+        std::string getPreferredRole() const;
+        std::string statusReportLong() const;
+        std::string statusReportBrief() const;
 
         // worldModel i/o
         void setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence);
@@ -43,6 +45,8 @@ class RobotClient
         std::shared_ptr<mtp::Communication> _comm;
         float _frequency;
         float _jitter;
+        std::string _previousRole = "UNDEFINED";
+
 };
 
 #endif

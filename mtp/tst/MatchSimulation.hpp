@@ -27,7 +27,8 @@ class MatchSimulation
         void advanceDuration(float duration);
 
         // state / result inspection, see also MatchSimulationChecks
-        void report() const;
+        void reportHeading() const;
+        void reportTick() const;
         std::vector<mtp::PlayerId> getPlayers() const;
 
     private:

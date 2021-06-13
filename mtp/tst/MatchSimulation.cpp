@@ -47,18 +47,14 @@ RobotClient& MatchSimulation::getRobot(mtp::PlayerId const &playerId)
 
 void MatchSimulation::advanceTick()
 {
+    if (_verbose && _tc == _t0) reportHeading();
     _tc += _tstep;
     // poke robots
-    if (_verbose)
-    {
-        printf("\n");
-        printf("simulation step START timestamp: %s\n", _tc.toStr().c_str());
-    }
     for (auto& robot: _robots)
     {
         robot.second.tick(_tc);
     }
-    if (_verbose) report();
+    if (_verbose) reportTick();
 }
 
 void MatchSimulation::advanceTicks(int ticks)
@@ -72,13 +68,36 @@ void MatchSimulation::advanceDuration(float duration)
     while (_tc < te) advanceTick();
 }
 
-void MatchSimulation::report() const
+void MatchSimulation::reportHeading() const
 {
-    std::ostringstream ostr;
+    printf("\nSimulated robots at t=0:\n");
     for (const auto& robot: _robots)
     {
-        printf("%s\n", robot.second.statusReport().c_str());
+        printf("   %s\n", robot.second.statusReportLong().c_str());
     }
+    printf("\n");
+    printf("time (s)  ");
+    for (const auto& robot: _robots)
+    {
+        printf("%-10d", robot.second.id.hash());
+    }
+    printf("\n");
+}
+
+void MatchSimulation::reportTick() const
+{
+    /* Legend:
+    X: robot reports not ready
+    C: robot current role has changed 
+    P: robot has a preference which is satisfied OK
+    Q: robot has a preference but MTP rejects it
+    */
+    printf("%8.3f  ", (double)(_tc - _t0));
+    for (const auto& robot: _robots)
+    {
+        printf("%-10s", robot.second.statusReportBrief().c_str());
+    }
+    printf("\n");
 }
 
 std::vector<mtp::PlayerId> MatchSimulation::getPlayers() const

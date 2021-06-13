@@ -23,6 +23,7 @@ RobotClient::~RobotClient()
 
 void RobotClient::tick(rtime const &t)
 {
+    _previousRole = mtp::roleEnumToString((*_mtp)->getOwnRole()); // for diagnostics / simulation reporting
     (*_mtp)->setCurrentTime(t);
     (*_mtp)->tick(t);
 }
@@ -65,9 +66,44 @@ const char *bool2str(bool b)
     return b ? "true" : "false";
 }
 
-std::string RobotClient::statusReport() const
+std::string RobotClient::getPreferredRole() const
 {
-    char buf[80] = {0};
-    sprintf(buf, "%s ready=%5s role=%s", id.describe().c_str(), bool2str(readyToPlay()), mtp::roleEnumToString(getOwnRole()).c_str());
+    mtp::PreferredRole pr = _comm->getState<mtp::PreferredRole>("PREFERRED_ROLE");
+    if ((mtp::RoleEnum)pr.role != mtp::RoleEnum::UNDEFINED) return mtp::roleEnumToString((mtp::RoleEnum)pr.role);
+    return "";
+}
+
+std::string RobotClient::statusReportLong() const
+{
+    // long version
+    char buf[280] = {0};
+    sprintf(buf, "%s ready=%5s role=%s preferred=%s", 
+        id.describe().c_str(), 
+        bool2str(readyToPlay()), 
+        mtp::roleEnumToString(getOwnRole()).c_str(),
+        getPreferredRole().c_str()
+        );
     return std::string(buf);
+}
+
+std::string RobotClient::statusReportBrief() const
+{
+    // short version
+    // first abbreviate roles: ATTACKER_ASSIST -> AA, DEFENDER_MAIN -> DM, GOALKEEPER -> GK (TODO: nicer to via Roles.hpp? use case beyond MatchSimulation?)
+    std::string currentRole = mtp::roleEnumToString(getOwnRole());
+    size_t idx = currentRole.find('_');
+    if (idx == std::string::npos) idx = 3;
+    std::string abbreviatedRole = std::string(1, currentRole[0]) + std::string(1, currentRole[idx+1]);
+    // now determine extra info characters
+    std::string extraInfo;
+    if (!readyToPlay()) extraInfo += "X";
+    if (_previousRole != currentRole) extraInfo += "C";
+    std::string preferredRole = getPreferredRole();
+    if (preferredRole.size())
+    {
+        if (preferredRole == currentRole) extraInfo += "P";
+        if (preferredRole != currentRole) extraInfo += "Q";
+    }
+    if (extraInfo.size()) return abbreviatedRole + "(" + extraInfo + ")";
+    return abbreviatedRole;
 }
