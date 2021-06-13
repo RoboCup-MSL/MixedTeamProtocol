@@ -34,7 +34,7 @@ std::vector<PlayerPacket> Communication::getPlayerPackets()
             // same-team checks and timeout checks are done in Player packet handler
             result.push_back(packet);
         }
-        else
+        /*else
         {
             if (r == RTDB2_ITEM_STALE)
             {
@@ -43,7 +43,7 @@ std::vector<PlayerPacket> Communication::getPlayerPackets()
                 tprintf("WARNING: timeout (age %.2fs): could not read MTP packet for client %d at %s", item.age(), client, _id.describe().c_str());
             }
             // if only RTDB would just throw clear exceptions. TODO
-        }
+        }*/
     }
     return result;
 }
@@ -56,7 +56,11 @@ void Communication::sendPlayerPacket(PlayerPacket const &packet)
 std::string Communication::getFrameString()
 {
     std::string result;
-    _rtdb.getFrameString(result);
+
+    RtDB2FrameSelection selection;
+    selection.local = true;
+    selection.shared = true;
+    _rtdb.getFrameString(result, selection);
     return result;
 }
 

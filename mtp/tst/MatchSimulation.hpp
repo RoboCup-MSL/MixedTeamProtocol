@@ -25,6 +25,7 @@ class MatchSimulation
         void advanceTick();
         void advanceTicks(int ticks);
         void advanceDuration(float duration);
+        void synchronize();
 
         // state / result inspection, see also MatchSimulationChecks
         void reportHeading() const;

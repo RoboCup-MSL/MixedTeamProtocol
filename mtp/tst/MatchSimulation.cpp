@@ -45,10 +45,38 @@ RobotClient& MatchSimulation::getRobot(mtp::PlayerId const &playerId)
     }
 }
 
+void MatchSimulation::synchronize()
+{
+    // normally, on robot (or possibly also in simulation) the Comm process/thread takes care of synchronizing data
+    // however in this test suite we simulate without Comm and without its sockets and sleeps
+    // so a database synchronization mechanism is needed, currently not provided by RTDB/COMM API
+
+    // previously, a symlink trick was applied to realize this
+    // but it has a negative side effect that within a tick robots incrementally know each others data, limiting the tests we could do here
+
+    for (auto& robot: _robots)
+    {
+        // mimick part of Comm (TODO: refactor Comm/API to provide this core functionality?)
+
+        // get the frame string of current robot
+        std::string frameString = robot.second.getFrameString();
+        // give data to friendly robots
+        for (auto& otherRobot: _robots)
+        {
+            if (robot.first.teamId == otherRobot.first.teamId && otherRobot.first.hash() != robot.first.hash())
+            {
+                otherRobot.second.setFrameString(frameString);
+            }
+        }
+    }
+}
+
 void MatchSimulation::advanceTick()
 {
     if (_verbose && _tc == _t0) reportHeading();
     _tc += _tstep;
+    // synchronize data between robots
+    synchronize();
     // poke robots
     for (auto& robot: _robots)
     {

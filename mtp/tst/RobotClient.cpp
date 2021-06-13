@@ -28,6 +28,16 @@ void RobotClient::tick(rtime const &t)
     (*_mtp)->tick(t);
 }
 
+std::string RobotClient::getFrameString() const
+{
+    return _comm->getFrameString();
+}
+
+void RobotClient::setFrameString(std::string const &s)
+{
+    _comm->setFrameString(s);
+}
+
 bool RobotClient::readyToPlay() const
 {
     return (*_mtp)->good();

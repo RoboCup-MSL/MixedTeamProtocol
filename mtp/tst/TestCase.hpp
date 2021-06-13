@@ -21,6 +21,8 @@ class TestCase : public Test
 public:
     TestCase()
     {
+        return; // not needed anymore
+
         // communication workaround/trick
         // 1. either we need to instantiate comm (as process, or thread) per team
         // 2. or we need to make the data available for all agents
@@ -42,7 +44,7 @@ public:
 
     ~TestCase()
     {
-        // return; // for database inspection in case test fails
+        return; // for database inspection in case test fails
         std::string command = "rm -rf";
         command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "mixedteam_A";
         command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "mixedteam_B";

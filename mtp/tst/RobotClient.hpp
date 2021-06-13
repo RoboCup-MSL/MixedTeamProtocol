@@ -25,6 +25,10 @@ class RobotClient
         // poke for an update at some frequency (10-40Hz) by controlling simulator
         void tick(rtime const &t);
 
+        // synchronization
+        std::string getFrameString() const;
+        void setFrameString(std::string const &s);
+
         // role allocation and conflict resolution
         bool readyToPlay() const;
         mtp::RoleEnum getOwnRole() const;
