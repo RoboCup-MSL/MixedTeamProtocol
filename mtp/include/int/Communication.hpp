@@ -48,6 +48,10 @@ public:
     }
     RefereeCommand getLastCommand();
 
+    // workaround for achieving somewhat realistic communication in test suite ... TODO redesign out of this interface?
+    std::string getFrameString(); // TODO: const (need change in RTDB API)
+    void setFrameString(std::string const &s);
+
 private:
     PlayerId _id;
     AdapterRTDB _rtdb;

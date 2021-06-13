@@ -53,6 +53,18 @@ void Communication::sendPlayerPacket(PlayerPacket const &packet)
     _rtdb.put("MTP", &packet);
 }
 
+std::string Communication::getFrameString()
+{
+    std::string result;
+    _rtdb.getFrameString(result);
+    return result;
+}
+
+void Communication::setFrameString(std::string const &s)
+{
+    _rtdb.putFrameString(s);
+}
+
 PlayerState Communication::getPlayerState()
 {
     PlayerState result;
