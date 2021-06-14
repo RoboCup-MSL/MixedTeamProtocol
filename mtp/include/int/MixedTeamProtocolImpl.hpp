@@ -4,6 +4,7 @@
 // headers from this package
 #include "ext/MixedTeamProtocol.hpp"
 #include "ext/PlayerId.hpp"
+#include "ext/Referee.hpp"
 #include "ext/Roles.hpp"
 #include "int/PlayerPacket.hpp"
 #include "int/Player.hpp"
@@ -28,6 +29,7 @@ public:
     std::vector<mtp::TeamMember> getTeam() const;
     std::vector<mtp::Object> getBalls() const;
     std::vector<mtp::Object> getObstacles() const;
+    RefereeCommand getLastCommand() const;
     void setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence);
     void setOwnBalls(std::vector<mtp::Object> balls);
     void setOwnObstacles(std::vector<mtp::Object> obstacles);

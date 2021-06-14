@@ -20,14 +20,14 @@ class Listener : public RefBoxCallback
         {
             _myteam = command.target();
         }
-        std::string t("all");
+        std::string t("ALL");
         if (command.target().compare(_myteam) == 0)
         {
-            t = "us";
+            t = "US";
         }
         else if (command.target().compare("") != 0)
         {
-            t = "them";
+            t = "THEM";
         }
         cout << "command: " << c << "; target: " << t << endl;
         _rtdb.put("TARGETTEAM", &t);

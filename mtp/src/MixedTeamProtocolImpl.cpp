@@ -67,6 +67,11 @@ std::vector<mtp::Object> MixedTeamProtocolImpl::getObstacles() const
     return std::vector<mtp::Object>();
 }
 
+RefereeCommand MixedTeamProtocolImpl::getLastCommand() const
+{
+    return _communication->getLastCommand();
+}
+
 void MixedTeamProtocolImpl::setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence)
 {
     _ownPosVel = toPosVel(position, velocity, confidence);

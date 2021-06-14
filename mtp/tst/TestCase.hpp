@@ -34,6 +34,8 @@ public:
         std::string command = std::string(p.parent_path()) + "/databaseLinkTrick.py";
         command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "mixedteam_A";
         command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "mixedteam_B";
+        command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "refbox_A";
+        command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "refbox_B";
         tprintf("running command: %s", command.c_str())
         system(command.c_str());
     };
@@ -43,6 +45,8 @@ public:
         std::string command = "rm -rf";
         command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "mixedteam_A";
         command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "mixedteam_B";
+        command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "refbox_A";
+        command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "refbox_B";
         if (command.size() > 20) // a little precaution in case for some reason the string would evaluate to "rm -rf /tmp" or something
         {
             tprintf("running command: %s", command.c_str())
