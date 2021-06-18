@@ -16,9 +16,10 @@ def parse_args():
     parser.add_argument('-n', '--dry-run', help='print commands instead of executing them', action='store_true')
     parser.add_argument('-j', '--jobs', help='number of parallel build jobs (threads) to run', type=int, default=4)
     parser.add_argument('-v', '--verbose', help='call make with its verbose option, which is useful to debug include directories and such', action='store_true')
+    parser.add_argument('-d', '--debug', help='enable debugging symbols in build', action='store_true')
     parser.add_argument('-t', '--test', help='also perform tests', action='store_true')
     parser.add_argument('--trace', help='build with tracing enabled and test a specific test case', type=str)
-    parser.add_argument('--uftrace-opts', help='only if --trace is used: pass these options to uftrace', type=str, default='-t 1us')
+    parser.add_argument('--uftrace-opts', help='only if --trace is used: pass these options to uftrace', type=str, default='-a -t 1us -A printf@arg1/s -A _tprintf_wrap@arg1/s')
     return parser.parse_args()
 
 
@@ -90,6 +91,9 @@ def run(args):
         cmake_opts = ''
         if args.trace:
             cmake_opts += '-E env CXXFLAGS="-pg" cmake'
+        if args.debug:
+            cmake_opts += '-DCMAKE_BUILD_TYPE=Debug'
+            # TODO: how to set compiler #define DEBUG? see MixedTeamProtocolImpl.cpp
         make_opts = '-j' + str(args.jobs)
         if args.verbose:
             make_opts += ' VERBOSE=1'
