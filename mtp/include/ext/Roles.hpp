@@ -26,6 +26,12 @@ enum class RoleEnum
     DISABLED_IN = 8
 }; // end of enum class RoleEnum
 
+struct PreferredRole
+{
+    RoleEnum role = RoleEnum::UNDEFINED;
+    float factor = 1.0;
+}; // end of struct PreferredRole
+
 // conversion functions
 std::string roleEnumToString(RoleEnum r);
 RoleEnum roleStringToEnum(std::string s);

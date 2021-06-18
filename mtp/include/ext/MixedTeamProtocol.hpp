@@ -26,6 +26,7 @@ public:
 
     // getters
     virtual bool good() const = 0; // false in case of errors, in which case robot should remain idle
+    virtual bool isLeader() const = 0; // there can only be one
     virtual mtp::RoleEnum getOwnRole() const = 0;
     virtual std::vector<mtp::TeamMember> getTeam() const = 0; // get all registered team member data
     virtual std::vector<mtp::Object> getBalls() const = 0; // typically 0 or 1 balls
