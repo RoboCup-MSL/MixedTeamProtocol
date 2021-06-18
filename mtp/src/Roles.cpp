@@ -56,6 +56,7 @@ const std::map<RoleEnum, int> minimumRoleCount = {
     {RoleEnum::GOALKEEPER, 1},
     {RoleEnum::ATTACKER_MAIN, 1},
     {RoleEnum::ATTACKER_ASSIST, 0},
+    {RoleEnum::ATTACKER_GENERIC, 0},
     {RoleEnum::DEFENDER_MAIN, 1}
 };
 
@@ -64,6 +65,7 @@ const std::map<RoleEnum, int> maximumRoleCount = {
     {RoleEnum::GOALKEEPER, 1},
     {RoleEnum::ATTACKER_MAIN, 1},
     {RoleEnum::ATTACKER_ASSIST, 1},
+    {RoleEnum::ATTACKER_GENERIC, 0}, // disable for now, Falcons teamplay / trees need more work to fully support this new role
     {RoleEnum::DEFENDER_MAIN, 1}
 };
 
@@ -109,7 +111,7 @@ std::vector<RoleEnum> mtp::calculateAvailableRoles(std::map<RoleEnum, int> const
         RoleEnum::GOALKEEPER,
         RoleEnum::ATTACKER_MAIN,
         RoleEnum::ATTACKER_ASSIST,
-        RoleEnum::ATTACKER_GENERIC,
+        //RoleEnum::ATTACKER_GENERIC,
         RoleEnum::DEFENDER_MAIN,
         RoleEnum::DEFENDER_GENERIC
         };
