@@ -23,9 +23,9 @@ AdapterRTDB::~AdapterRTDB()
 {
 }
 
-std::set<ClientType> AdapterRTDB::getClients() // TODO: const
+std::set<PlayerIdHash> AdapterRTDB::getClients() // TODO: const
 {
-    std::set<ClientType> result = getAgentIds(); // using new RtDB2Monitor
+    std::set<PlayerIdHash> result = getAgentIds(); // using new RtDB2Monitor
     return result;
 }
 

@@ -9,6 +9,9 @@
 #include <cmath>
 #include <algorithm>
 
+#ifndef DEBUG
+#define DEBUG false
+#endif
 
 using namespace mtp;
 
@@ -27,6 +30,11 @@ MixedTeamProtocolImpl::~MixedTeamProtocolImpl()
 bool MixedTeamProtocolImpl::good() const
 {
     return _good;
+}
+
+bool MixedTeamProtocolImpl::isLeader() const
+{
+    return _state.isLeader;
 }
 
 RoleEnum MixedTeamProtocolImpl::getOwnRole() const
@@ -110,10 +118,8 @@ void MixedTeamProtocolImpl::setOwnIntention(std::string intention)
 
 void MixedTeamProtocolImpl::setPreferredOwnRole(RoleEnum const &role, float preference)
 {
-    mtp::PreferredRole r;
-    r.role = (int)role;
-    r.preference = preference;
-    _communication->setState("PREFERRED_ROLE", r);
+    _communication->setState("PREFERRED_ROLE", (int)role);
+    _communication->setState("PREFERENCE_FACTOR", preference);
 }
 
 void MixedTeamProtocolImpl::setT0(rtime const &t0)
@@ -145,6 +151,8 @@ void MixedTeamProtocolImpl::tick(rtime const &t)
     _state = _communication->getPlayerState();
     auto k = _communication->getPlayerPackets();
     updatePlayers(k);
+    // determine if robot is the leader and act accordingly
+    calculateLeader();
     // worldModel processing (always, regardless of errors)
     calculateWorldModel(); // TODO: discuss: to which extent do we want to bring WM responsibility into here?
     // determine own role, if needed
@@ -158,12 +166,14 @@ void MixedTeamProtocolImpl::tick(rtime const &t)
 
 void MixedTeamProtocolImpl::updatePlayers(std::vector<PlayerPacket> packets)
 {
+    if (DEBUG) tprintf("player %s got %d packets", _id.describe().c_str(), (int)packets.size());
     // process new packets
     for (auto& packet: packets)
     {
-        // determine PlayerId and ClientType hash
+        // determine PlayerId and PlayerIdHash
         PlayerId id(packet.vendor_id, packet.shirt_id, packet.team_id);
-        ClientType c = id.hash();
+    if (DEBUG) tprintf("-> %s", id.describe().c_str());
+        PlayerIdHash c = id.hash();
         // ignore packet if from different team
         if (packet.team_id != _id.teamId) continue;
         // create if not yet existing
@@ -183,6 +193,18 @@ void MixedTeamProtocolImpl::updatePlayers(std::vector<PlayerPacket> packets)
     }
 }
 
+void MixedTeamProtocolImpl::calculateLeader()
+{
+    // for now: the first player in the map is leader
+    // this typically is the player with lowest hash
+    _state.isLeader = (_players.begin()->first == _id.hash());
+    // perform leader duties
+    if (_state.isLeader)
+    {
+        calculateRoleAllocation(); // for every robot - send at end of tick, so next tick all robots will take their assigned roles
+    }
+}
+
 void MixedTeamProtocolImpl::calculateWorldModel()
 {
 }
@@ -190,7 +212,13 @@ void MixedTeamProtocolImpl::calculateWorldModel()
 void MixedTeamProtocolImpl::calculateGood()
 {
     _good = (_error == 0);
-    // TODO: more?
+    if (_good)
+    {
+        // check if current role allocation is valid
+        auto currentRoles = _roleAllocation;
+        auto count = roleAllocationToCount(currentRoles);
+        _good = checkRoleCount(count);
+    }
 }
 
 RoleAllocation MixedTeamProtocolImpl::getCurrentRoleAllocation()
@@ -206,23 +234,70 @@ RoleAllocation MixedTeamProtocolImpl::getCurrentRoleAllocation()
     return result;
 }
 
+void MixedTeamProtocolImpl::calculateRoleAllocation()
+{
+    _roleAllocation.clear();
+    // construct input
+    RoleAllocationAlgorithmInput input(_id);
+    input.currentRoles = getCurrentRoleAllocation();
+    if (RoleEnum(_state.preferredRole) != RoleEnum::UNDEFINED)
+    {
+        input.preferredRoles.at(_id).role = RoleEnum(_state.preferredRole);
+        input.preferredRoles.at(_id).factor = _state.preferenceFactor;
+    }
+    for (auto const& player: _players) // team members (excluding self)
+    {
+        if (player.second.packet.role_preference.size() == 1)
+        {
+            input.preferredRoles[player.second.id].role = RoleEnum(player.second.packet.role_preference.at(0).first);
+            input.preferredRoles[player.second.id].factor = player.second.packet.role_preference.at(0).second;
+        }
+    }
+    // run the algorithm
+    RoleAllocationAlgorithmKuhnMunkres algo(input);
+    algo.run();
+    if (DEBUG) tprintf("algorithm result:\n%s", algo.describe().c_str());
+    // handle result
+    _error |= algo.error; 
+    if (algo.error == 0)
+    {
+        _roleAllocation = algo.result;
+    }
+}
+
+RoleAllocation MixedTeamProtocolImpl::getRoleAllocationFromLeader()
+{
+    mtp::RoleAllocation result;
+    for (auto const& player: _players) // team members (excluding self)
+    {
+        if (player.second.packet.is_leader)
+        {
+            for (auto const& rolepair: player.second.packet.role_allocation)
+            {
+                int playerHash = rolepair.first;
+                RoleEnum role = RoleEnum(rolepair.second);
+                result[_players.at(playerHash).id] = role;
+            }
+        }
+    }
+    return result;
+}
+
 void MixedTeamProtocolImpl::calculateOwnRole()
 {
-    // gather current role allocation
-    auto currentRoles = getCurrentRoleAllocation();
-    // run the algorithm
-    RoleAllocationAlgorithmKuhnMunkres algo(_id, currentRoles, (mtp::RoleEnum)_state.preferredRole.role, _state.preferredRole.preference);
-    algo.run();
-    //tprintf("algorithm result:\n%s", algo.describe().c_str()); // DEBUG
-    // handle result
-    _error |= algo.error;
-    if (algo.result.count(_id))
+    //_state.currentRole = (int)RoleEnum::UNDEFINED;
+    if (!_state.isLeader)
     {
-        _state.currentRole = (int)algo.result.at(_id);
-    }
-    else
+        _roleAllocation = getRoleAllocationFromLeader();
+        if (_roleAllocation.size())
+        {
+            if (DEBUG) tprintf("player %s got role allocation (size %d) from leader", _id.describe().c_str(), _roleAllocation.size());
+        }
+    } // otherwise _roleAllocation is already set
+    if (_roleAllocation.count(_id))
     {
-        _state.currentRole = (int)RoleEnum::UNDEFINED;
+        _state.currentRole = (int)_roleAllocation.at(_id);
+        _communication->setState("CURRENT_ROLE", _state.currentRole); // TODO: rework data model to not have this duplicate administration
     }
 }
 
@@ -234,9 +309,24 @@ PlayerPacket MixedTeamProtocolImpl::makePacket() const
     result.team_id = _id.teamId;
     result.timestamp_ms = int(round(double(_tc - _t0) * 1000));
     result.self_loc.push_back(_state.ownPosVel);
-    result.self_loc.push_back(_state.hasBall);
+    result.has_ball = _state.hasBall;
     // TODO: balls, obstacles
-    result.role = (uint8_t)getOwnRole();
+    result.is_leader = _state.isLeader;
+    if (_state.isLeader)
+    {
+        for (auto const& rp: _roleAllocation)
+        {
+            result.role_allocation.push_back(std::make_pair(rp.first.hash(), (uint8_t)rp.second));
+        }
+    }
+    mtp::PreferredRole pr;
+    pr.role = (RoleEnum)_communication->getState<int>("PREFERRED_ROLE");
+    pr.factor = _communication->getState<float>("PREFERENCE_FACTOR");
+    if ((mtp::RoleEnum)pr.role != mtp::RoleEnum::UNDEFINED)
+    {
+        result.role_preference.push_back(std::make_pair((uint8_t)pr.role, pr.factor));
+    }
+    result.role = (uint8_t)_state.currentRole;
     result.intention = _state.intention;
     result.error = _error;
     return result;

@@ -25,6 +25,7 @@ public:
 
     // implementation of the API
     bool good() const;
+    bool isLeader() const;
     mtp::RoleEnum getOwnRole() const;
     std::vector<mtp::TeamMember> getTeam() const;
     std::vector<mtp::Object> getBalls() const;
@@ -54,15 +55,19 @@ private:
     bool _started = false;
     rtime _t0, _tc;
     uint8_t _error = 0;
+    RoleAllocation _roleAllocation;
     std::default_random_engine _rng;
     std::shared_ptr<Communication> _communication;
-    std::map<ClientType, Player> _players;
+    std::map<PlayerIdHash, Player> _players;
 
     // functions
     void updatePlayers(std::vector<PlayerPacket> packets);
+    void calculateLeader();
     void calculateWorldModel();
     void calculateGood();
     RoleAllocation getCurrentRoleAllocation();
+    RoleAllocation getRoleAllocationFromLeader();
+    void calculateRoleAllocation(); // only done by leader
     void calculateOwnRole();
     PlayerPacket makePacket() const;
     PosVel toPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence);

@@ -11,6 +11,15 @@ namespace mtp
 
 RoleCount roleAllocationToCount(RoleAllocation const &roles);
 
+struct RoleAllocationAlgorithmInput
+{
+    PlayerId        myId;
+    RoleAllocation  currentRoles;
+    std::map<PlayerId, PreferredRole> preferredRoles;
+
+    RoleAllocationAlgorithmInput(PlayerId id) : myId(id) {};
+};
+
 class RoleAllocationAlgorithm
 {
 public:
@@ -23,12 +32,7 @@ public:
     //     b) own role preference is satisfied (example: force becoming goalkeeper)
     // * otherwise, a nonzero error is set
     // * if current role allocation is OK, then it will be reused
-    RoleAllocationAlgorithm(
-        PlayerId const &myId, 
-        RoleAllocation const &currentRoleAllocation, 
-        RoleEnum const &myPreferredRole = RoleEnum::UNDEFINED,
-        float myPreferredRoleFactor = 0.0
-        );
+    RoleAllocationAlgorithm(RoleAllocationAlgorithmInput const &input);
     void run(); // cannot be called at construction time, so must be called by client
 
     // algorithm result
@@ -37,12 +41,9 @@ public:
     std::string describe() const;
 
 protected:
-    PlayerId _myId;
-    RoleAllocation _currentRoleAllocation;
-    RoleEnum _myPreferredRole = RoleEnum::UNDEFINED;
-    float _myPreferredRoleFactor = 0.0;
+    RoleAllocationAlgorithmInput _input;
     bool currentIsOk() const;
-    void checkInputs() const;
+    void checkAndFillInputs();
     void checkResult();
     virtual void _run() = 0; // to be filled in by derived class
 

@@ -74,6 +74,7 @@ PlayerState Communication::getPlayerState()
     PlayerState result;
     _rtdb.get<int>("CURRENT_ROLE", &result.currentRole);
     _rtdb.get("PREFERRED_ROLE", &result.preferredRole);
+    _rtdb.get("PREFERENCE_FACTOR", &result.preferenceFactor);
     _rtdb.get("INTENTION", &result.intention);
     _rtdb.get("OWN_POS_VEL", &result.ownPosVel);
     _rtdb.get("HAS_BALL", &result.hasBall);
