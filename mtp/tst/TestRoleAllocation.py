@@ -100,8 +100,8 @@ class TestNewPreference(RoleAllocationTestCase):
         expected = """Running algorithm ... done ...
 Result code: 0
 Result allocation:
-         vendor=1  shirt=1  team=A hash=1     : DEFENDER_MAIN       (GOALKEEPER)        
-         vendor=1  shirt=2  team=A hash=2     : ATTACKER_ASSIST     (UNDEFINED)         
+         vendor=1  shirt=1  team=A hash=1     : ATTACKER_ASSIST     (GOALKEEPER)        
+         vendor=1  shirt=2  team=A hash=2     : DEFENDER_MAIN       (UNDEFINED)         
          vendor=1  shirt=3  team=A hash=3     : ATTACKER_MAIN       (UNDEFINED)         
   [self] vendor=1  shirt=4  team=A hash=4     : GOALKEEPER          (UNDEFINED)"""
         self.assertEqual(output.strip(), expected.strip())

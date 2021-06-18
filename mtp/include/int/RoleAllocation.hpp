@@ -67,20 +67,6 @@ private:
 
 }; // end of class RoleAllocationAlgorithmBruteForce
 
-class RoleAllocationAlgorithmLinearProgramming: public RoleAllocationAlgorithm
-{
-public:
-    // linear programming: take constraints into account and find the best role
-    // this is the most general and flexible algorithm, but perhaps a bit overkill for our use case
-    // and the underlying Google OR-tools library is not easy to install
-    using RoleAllocationAlgorithm::RoleAllocationAlgorithm;
-
-    void _run();
-
-private:
-
-}; // end of class RoleAllocationAlgorithmLinearProgramming
-
 class RoleAllocationAlgorithmKuhnMunkres: public RoleAllocationAlgorithm
 {
 public:
