@@ -44,7 +44,7 @@ public:
 
     ~TestCase()
     {
-        return; // for database inspection in case test fails
+        //return; // for database inspection in case test fails
         std::string command = "rm -rf";
         command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "mixedteam_A";
         command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "mixedteam_B";

@@ -5,7 +5,6 @@
 #include "ext/PlayerId.hpp"
 #include "ext/Referee.hpp"
 #include "int/PlayerPacket.hpp"
-#include "int/PlayerState.hpp"
 #include "int/AdapterRTDB.hpp"
 
 // standard/system headers
@@ -22,9 +21,6 @@ public:
 
     std::vector<PlayerPacket> getPlayerPackets();
     void sendPlayerPacket(PlayerPacket const &packet);
-
-    PlayerState getPlayerState();
-    void setPlayerState(PlayerState const &state);
 
     template<typename T>
     T getState(std::string key)

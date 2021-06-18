@@ -46,9 +46,6 @@ public:
     void tick(rtime const &t);
 
 private:
-    // state data member are bundled in a single RTDB key
-    mtp::PlayerState _state;
-
     // other data members
     bool _good = false;
     PlayerId _id;

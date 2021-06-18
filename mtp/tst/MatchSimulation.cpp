@@ -116,6 +116,7 @@ void MatchSimulation::reportTick() const
 {
     /* Legend:
     X: robot reports not ready
+    L: robot claims to be the leader
     C: robot current role has changed 
     P: robot has a preference which is satisfied OK
     Q: robot has a preference but MTP rejects it

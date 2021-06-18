@@ -55,10 +55,8 @@ void RobotClient::setCurrentRole(mtp::RoleEnum const &role)
 
 void RobotClient::setPreferredRole(mtp::RoleEnum const &role)
 {
-    mtp::PreferredRole pr;
-    pr.role = (int)role;
-    pr.preference = 1.0;
-    _comm->setState("PREFERRED_ROLE", pr);
+    _comm->setState("PREFERRED_ROLE", (int)role);
+    _comm->setState("PREFERENCE_FACTOR", 1.0);
 }
 
 void RobotClient::setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence)
@@ -78,8 +76,8 @@ const char *bool2str(bool b)
 
 std::string RobotClient::getPreferredRole() const
 {
-    mtp::PreferredRole pr = _comm->getState<mtp::PreferredRole>("PREFERRED_ROLE");
-    if ((mtp::RoleEnum)pr.role != mtp::RoleEnum::UNDEFINED) return mtp::roleEnumToString((mtp::RoleEnum)pr.role);
+    mtp::RoleEnum role = (mtp::RoleEnum)_comm->getState<int>("PREFERRED_ROLE");
+    if (role != mtp::RoleEnum::UNDEFINED) return mtp::roleEnumToString(role);
     return "";
 }
 
@@ -100,13 +98,15 @@ std::string RobotClient::statusReportBrief() const
 {
     // short version
     // first abbreviate roles: ATTACKER_ASSIST -> AA, DEFENDER_MAIN -> DM, GOALKEEPER -> GK (TODO: nicer to via Roles.hpp? use case beyond MatchSimulation?)
-    std::string currentRole = mtp::roleEnumToString(getOwnRole());
+    auto role = getOwnRole();
+    std::string currentRole = mtp::roleEnumToString(role);
     size_t idx = currentRole.find('_');
     if (idx == std::string::npos) idx = 3;
     std::string abbreviatedRole = std::string(1, currentRole[0]) + std::string(1, currentRole[idx+1]);
     // now determine extra info characters
     std::string extraInfo;
     if (!readyToPlay()) extraInfo += "X";
+    if ((*_mtp)->isLeader()) extraInfo += "L";
     if (_previousRole != currentRole) extraInfo += "C";
     std::string preferredRole = getPreferredRole();
     if (preferredRole.size())

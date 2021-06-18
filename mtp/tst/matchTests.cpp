@@ -4,6 +4,14 @@
 #include <vector>
 
 
+// 4 simulated ticks should be enough time for robots to decide on a role allocation
+// * after tick 1, robots are aware of each others existence
+// * after tick 2, the leader is identified
+// * after tick 3, the only leader shares the role allocation
+// * after tick 4, all robots report that the roles are OK
+#define NUM_TICKS_SETTLE (4)
+
+
 class MatchTest : public mtp::TestCase { };
 
 TEST_F(MatchTest, SingleRobotSingleTick)
@@ -45,8 +53,7 @@ TEST_F(MatchTest, TwoMixedTeamsInitialPhase)
     m.addRobot(mtp::PlayerId(2, 5, 'A'));
 
     // run
-    // 3 simulated ticks should be enough time for robots to decide on a role allocation
-    m.advanceTicks(3);
+    m.advanceTicks(NUM_TICKS_SETTLE);
 
     // assert
     MatchSimulationChecks t(m);
@@ -85,7 +92,7 @@ TEST_F(MatchTest, RolePreferences)
     m.addRobot(mtp::PlayerId(2, 3, 'B'));
 
     // run
-    m.advanceTicks(2);
+    m.advanceTicks(NUM_TICKS_SETTLE);
 
     // assert
     checkRolePreferences3v3(m);
@@ -103,7 +110,7 @@ TEST_F(MatchTest, RoleCurrentStaysSame)
     m.addRobot(mtp::PlayerId(2, 3, 'B'));
 
     // run
-    m.advanceTicks(2);
+    m.advanceTicks(NUM_TICKS_SETTLE);
 
     // assert
     checkRolePreferences3v3(m);
@@ -147,14 +154,14 @@ TEST_F(MatchTest, RoleAllocationNegotationSingleTeamInvalidCurrentState)
     m.addRobot(mtp::PlayerId(1, 4, 'A')).setCurrentRole(mtp::RoleEnum::ATTACKER_GENERIC);
 
     // run
-    m.advanceTicks(2); // let the robots learn of each others existence and possibly already settle on a role allocation
+    m.advanceTicks(NUM_TICKS_SETTLE); // let the robots learn of each others existence and possibly already settle on a role allocation
 
     // again force the given situation
     m.getRobot(mtp::PlayerId(1, 1, 'A')).setCurrentRole(mtp::RoleEnum::ATTACKER_GENERIC);
     m.getRobot(mtp::PlayerId(1, 2, 'A')).setCurrentRole(mtp::RoleEnum::ATTACKER_ASSIST);
     m.getRobot(mtp::PlayerId(1, 3, 'A')).setCurrentRole(mtp::RoleEnum::ATTACKER_MAIN);
     m.getRobot(mtp::PlayerId(1, 4, 'A')).setCurrentRole(mtp::RoleEnum::ATTACKER_GENERIC);
-    m.advanceTicks(2);
+    m.advanceTicks(NUM_TICKS_SETTLE);
 
     // assert
     MatchSimulationChecks t(m);

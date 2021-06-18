@@ -13,7 +13,13 @@ Communication::Communication(PlayerId const &id, bool path_encoding)
     // TODO: how to ensure current id is not already claimed? Rob? Should make requirement + test case in RTDB layer.
 
     // initialize RTDB state
-    setPlayerState(PlayerState());
+    setState("CURRENT_ROLE", 0);
+    setState("PREFERRED_ROLE", 0);
+    setState("PREFERENCE_FACTOR", 0.0);
+    setState("OWN_POS_VEL", mtp::PosVel());
+    setState("HAS_BALL", false);
+    setState("IS_LEADER", false);
+    setState("GOOD", false);
 }
 
 Communication::~Communication()
@@ -67,27 +73,6 @@ std::string Communication::getFrameString()
 void Communication::setFrameString(std::string const &s)
 {
     _rtdb.putFrameString(s);
-}
-
-PlayerState Communication::getPlayerState()
-{
-    PlayerState result;
-    _rtdb.get<int>("CURRENT_ROLE", &result.currentRole);
-    _rtdb.get("PREFERRED_ROLE", &result.preferredRole);
-    _rtdb.get("PREFERENCE_FACTOR", &result.preferenceFactor);
-    _rtdb.get("INTENTION", &result.intention);
-    _rtdb.get("OWN_POS_VEL", &result.ownPosVel);
-    _rtdb.get("HAS_BALL", &result.hasBall);
-    return result;
-}
-
-void Communication::setPlayerState(PlayerState const &state)
-{
-    _rtdb.put("CURRENT_ROLE", &state.currentRole);
-    _rtdb.put("PREFERRED_ROLE", &state.preferredRole);
-    _rtdb.put("INTENTION", &state.intention);
-    _rtdb.put("OWN_POS_VEL", &state.ownPosVel);
-    _rtdb.put("HAS_BALL", &state.hasBall);
 }
 
 RefereeCommand Communication::getLastCommand()
