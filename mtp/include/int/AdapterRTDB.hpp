@@ -19,7 +19,7 @@ public:
     AdapterRTDB(PlayerId const &id, std::string const &dbname = "default", bool path_encoding = false);
     ~AdapterRTDB();
 
-    std::set<PlayerIdHash> getClients(); // TODO const; - require some fundamental rework in RTDB --> v3?
+    std::set<int> getClients(); // TODO const; - require some fundamental rework in RTDB --> v3?
 
 private:
     RtDB2Context createContext(PlayerId const &id, std::string const &dbname, bool path_encoding);
