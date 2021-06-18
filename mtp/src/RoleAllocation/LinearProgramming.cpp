@@ -31,7 +31,7 @@ void RoleAllocationAlgorithmLinearProgramming::_run()
 
     // we have P players and R roles
     std::vector<PlayerId> players;
-    for (auto const &rp: _currentRoleAllocation)
+    for (auto const &rp: _input.currentRoles)
     {
         players.push_back(rp.first);
     }
@@ -88,11 +88,12 @@ void RoleAllocationAlgorithmLinearProgramming::_run()
         for (int r = 0; r < R; ++r)
         {
             objective->SetCoefficient(variables.at(p).at(r), OBJECTIVE_COEFFICIENT_DEFAULT);
-            if (roles.at(r) == _currentRoleAllocation.at(players.at(p)))
+            if (roles.at(r) ==  _input.currentRoles.at(players.at(p)))
             {
                 objective->SetCoefficient(variables.at(p).at(r), OBJECTIVE_COEFFICIENT_CURRENT);
             }
-            if (_myPreferredRole != RoleEnum::UNDEFINED && players.at(p) == _myId && roles.at(r) == _myPreferredRole)
+            auto preferredRole = _input.preferredRoles.at(players.at(p)).role;
+            if (preferredRole != RoleEnum::UNDEFINED && roles.at(r) == preferredRole)
             {
                 objective->SetCoefficient(variables.at(p).at(r), OBJECTIVE_COEFFICIENT_PREFERENCE);
             }

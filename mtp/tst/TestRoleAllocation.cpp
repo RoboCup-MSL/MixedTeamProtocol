@@ -62,26 +62,30 @@ int main(int argc, char **argv)
         currentRoles[mtp::PlayerId(1, teammemberShirtId)] = role;
     }
 
+    // construct algorithm input
+    mtp::RoleAllocationAlgorithmInput input(myId);
+    input.currentRoles = currentRoles;
+    mtp::RoleEnum myPreferredRole = mtp::roleStringToEnum(vm.at("my-preference").as<std::string>());
+    if (myPreferredRole != mtp::RoleEnum::UNDEFINED)
+    {
+        input.preferredRoles[myId].role = myPreferredRole;
+        input.preferredRoles[myId].factor = 1.0; // TODO: allow more options?
+    }
+
     // select the algorithm
     mtp::RoleAllocationAlgorithm *algo = NULL;
     std::cout << "Running algorithm ..." << std::flush;
-    mtp::RoleEnum myPreferredRole = mtp::roleStringToEnum(vm.at("my-preference").as<std::string>());
-    float myPreferredRoleFactor = 0.0;
-    if (myPreferredRole != mtp::RoleEnum::UNDEFINED)
-    {
-        myPreferredRoleFactor = 1.0; // TODO: allow more options?
-    }
     if (vm.at("solver").as<std::string>() == "BRUTEFORCE")
     {
-        algo = new mtp::RoleAllocationAlgorithmBruteForce(myId, currentRoles, myPreferredRole, myPreferredRoleFactor);
+        algo = new mtp::RoleAllocationAlgorithmBruteForce(input);
     }
     else if (vm.at("solver").as<std::string>() == "LINEARPROGRAMMING")
     {
-        algo = new mtp::RoleAllocationAlgorithmLinearProgramming(myId, currentRoles, myPreferredRole, myPreferredRoleFactor);
+        algo = new mtp::RoleAllocationAlgorithmLinearProgramming(input);
     }
     else if (vm.at("solver").as<std::string>() == "MUNKRES")
     {
-        algo = new mtp::RoleAllocationAlgorithmKuhnMunkres(myId, currentRoles, myPreferredRole, myPreferredRoleFactor);
+        algo = new mtp::RoleAllocationAlgorithmKuhnMunkres(input);
     }
     else
     {

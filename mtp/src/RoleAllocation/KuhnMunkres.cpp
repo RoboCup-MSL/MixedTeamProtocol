@@ -24,7 +24,7 @@ void RoleAllocationAlgorithmKuhnMunkres::_run()
 
     // we have P players and R roles
     std::vector<PlayerId> players;
-    for (auto const &rp: _currentRoleAllocation)
+    for (auto const &rp: _input.currentRoles)
     {
         players.push_back(rp.first);
     }
@@ -44,7 +44,7 @@ void RoleAllocationAlgorithmKuhnMunkres::_run()
      */
 
     // create and fill matrix
-    float MATRIX_WEIGHT_DEFAULT = 2.0;
+    float MATRIX_WEIGHT_DEFAULT = 20.0;
     float MATRIX_WEIGHT_DISABLED = 99.0;
     float MATRIX_WEIGHT_REQUIRED = 1.0; // to ensure the required roles (GOALKEEPER etc) are always chosen
     float MATRIX_WEIGHT_FACTOR_CURRENT_ROLE = 0.6; // give priority to current role, minimize switching
@@ -72,17 +72,17 @@ void RoleAllocationAlgorithmKuhnMunkres::_run()
                 m(p,r) = MATRIX_WEIGHT_DISABLED;
             }
             m(p,r) += MATRIX_WEIGHT_OFFSET_ROLE_INDEX * r;
-            if (roles.at(r) == _currentRoleAllocation.at(players.at(p)))
+            if (roles.at(r) == _input.currentRoles.at(players.at(p)))
             {
                 m(p,r) *= MATRIX_WEIGHT_FACTOR_CURRENT_ROLE;
             }
-            if (_myPreferredRole != RoleEnum::UNDEFINED && players.at(p) == _myId && roles.at(r) == _myPreferredRole)
+            auto preferredRole = _input.preferredRoles.at(players.at(p)).role;
+            if (preferredRole != RoleEnum::UNDEFINED && roles.at(r) == preferredRole)
             {
                 m(p,r) *= MATRIX_WEIGHT_FACTOR_PREFERRED_ROLE;
             }
         }
     }
-
 
     // solve
     //std::cout << "BEFORE SOLVE" << m << std::endl;

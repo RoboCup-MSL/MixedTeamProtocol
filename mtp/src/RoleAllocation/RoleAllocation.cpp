@@ -22,17 +22,9 @@ RoleCount mtp::roleAllocationToCount(RoleAllocation const &roles)
     return result;
 }
 
-RoleAllocationAlgorithm::RoleAllocationAlgorithm(
-    PlayerId const &myId,
-    RoleAllocation const &currentRoleAllocation,
-    RoleEnum const &myPreferredRole,
-    float myPreferredRoleFactor
-    )
+RoleAllocationAlgorithm::RoleAllocationAlgorithm(RoleAllocationAlgorithmInput const &input)
 :
-    _myId(myId),
-    _currentRoleAllocation(currentRoleAllocation),
-    _myPreferredRole(myPreferredRole),
-    _myPreferredRoleFactor(myPreferredRoleFactor)
+    _input(input)
 {
     // may not call run() from constructor
 }
@@ -40,23 +32,23 @@ RoleAllocationAlgorithm::RoleAllocationAlgorithm(
 bool RoleAllocationAlgorithm::currentIsOk() const
 {
     // check own role preference
-    if (_myPreferredRoleFactor > 0.0)
+    if (_input.preferredRoles.at(_input.myId).factor > 0.0)
     {
-        if (_currentRoleAllocation.at(_myId) != _myPreferredRole) return false;
+        if (_input.currentRoles.at(_input.myId) != _input.preferredRoles.at(_input.myId).role) return false;
     }
     // check role count against specification
-    auto count = roleAllocationToCount(_currentRoleAllocation);
+    auto count = roleAllocationToCount(_input.currentRoles);
     return checkRoleCount(count);
 }
 
 void RoleAllocationAlgorithm::run()
 {
     // input checks
-    checkInputs();
+    checkAndFillInputs();
     // check if current role allocation is good enough
     if (currentIsOk())
     {
-        result = _currentRoleAllocation;
+        result = _input.currentRoles;
     }
     else
     {
@@ -83,17 +75,28 @@ void RoleAllocationAlgorithm::checkResult()
     }
 }
 
-void RoleAllocationAlgorithm::checkInputs() const
+void RoleAllocationAlgorithm::checkAndFillInputs()
 {
-    if (!_myId.valid())
+    if (!_input.myId.valid())
     {
-        throw std::runtime_error("RoleAllocationAlgorithm got an invalid player id (self): " + _myId.describe());
+        throw std::runtime_error("RoleAllocationAlgorithm got an invalid player id (self): " + _input.myId.describe());
     }
-    if (_myPreferredRoleFactor < 0.0 || _myPreferredRoleFactor > 1.0)
+    if (!_input.currentRoles.count(_input.myId))
     {
-        throw std::runtime_error("RoleAllocationAlgorithm got an invalid role preference factor: " + std::to_string(_myPreferredRoleFactor));
+        _input.currentRoles[_input.myId] = mtp::RoleEnum::UNDEFINED;
     }
-    for (auto const& imap: _currentRoleAllocation)
+    if (!_input.preferredRoles.count(_input.myId))
+    {
+        _input.preferredRoles[_input.myId].role = mtp::RoleEnum::UNDEFINED;
+        _input.preferredRoles[_input.myId].factor = 0.0;
+    }
+    float myPreferredRoleFactor = _input.preferredRoles.at(_input.myId).factor;
+    if (myPreferredRoleFactor < 0.0 || myPreferredRoleFactor > 1.0)
+    {
+        throw std::runtime_error("RoleAllocationAlgorithm got an invalid role preference factor: " + std::to_string(myPreferredRoleFactor));
+    }
+    // check each current role, set preferredRole if not existing
+    for (auto const& imap: _input.currentRoles)
     {
         if (!imap.first.valid())
         {
@@ -107,6 +110,16 @@ void RoleAllocationAlgorithm::checkInputs() const
         {
             throw std::runtime_error("RoleAllocationAlgorithm got an invalid current role");
         }
+        if (!_input.preferredRoles.count(imap.first))
+        {
+            _input.preferredRoles[imap.first].role = mtp::RoleEnum::UNDEFINED;
+            _input.preferredRoles[imap.first].factor = 0.0;
+        }
+    }
+    // check that the sizes are equal, if not, this means that extra players must be present in the preferredRoles map
+    if (_input.preferredRoles.size() != _input.currentRoles.size())
+    {
+        throw std::runtime_error("RoleAllocationAlgorithm got extra player in preferredRoles w.r.t. currentRoles");
     }
 }
 
@@ -119,7 +132,7 @@ std::string RoleAllocationAlgorithm::describe() const
     for (auto const& rolePair: result)
     {
         std::string selfString = "      ";
-        if (rolePair.first == _myId) selfString = "[self]";
+        if (rolePair.first == _input.myId) selfString = "[self]";
         ostr << "  " << selfString << " " << rolePair.first.describe() << ": " << std::setw(20) << std::left;
         try
         {
@@ -130,9 +143,9 @@ std::string RoleAllocationAlgorithm::describe() const
             ostr << "ERROR(" << (int)rolePair.second << ")";
         }
         std::string beforeString = "";
-        if (_currentRoleAllocation.count(rolePair.first))
+        if (_input.currentRoles.count(rolePair.first))
         {
-            beforeString = "(" + mtp::roleEnumToString(_currentRoleAllocation.at(rolePair.first)) + ")";
+            beforeString = "(" + mtp::roleEnumToString(_input.currentRoles.at(rolePair.first)) + ")";
         }
         ostr << std::setw(20) << std::left << beforeString << std::endl;
     }

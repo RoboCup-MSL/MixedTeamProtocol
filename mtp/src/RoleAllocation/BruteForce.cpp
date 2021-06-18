@@ -17,7 +17,7 @@ void RoleAllocationAlgorithmBruteForce::_run()
     // check if current situation is OK
     if (currentIsOk())
     {
-        result = _currentRoleAllocation;
+        result = _input.currentRoles;
         return;
     }
     // generate candidates
@@ -43,7 +43,7 @@ std::vector<RoleAllocation> RoleAllocationAlgorithmBruteForce::generateCandidate
     std::vector<RoleAllocation> result;
     std::vector<RoleEnum> roles = allAssignableRoles();
     std::vector<PlayerId> players;
-    for (auto const& imap: _currentRoleAllocation) players.push_back(imap.first);
+    for (auto const& imap: _input.currentRoles) players.push_back(imap.first);
     // initialize running RoleAllocation object
     RoleAllocation rc;
     for (auto const &player: players) rc[player] = roles.at(0);
@@ -80,13 +80,13 @@ float RoleAllocationAlgorithmBruteForce::calculatePenalty(RoleAllocation const &
     //   * similar to current
     auto count = roleAllocationToCount(candidate);
     bool validTeam = checkRoleCount(count); // TODO upstream, remove all invalid candidates earlier
-    auto myRole = candidate.at(_myId);
+    auto myRole = candidate.at(_input.myId);
     bool validSelf = checkRoleCount(myRole, count.at(myRole));
-    bool preferred = (myRole == _myPreferredRole);
+    bool preferred = (myRole == _input.preferredRoles.at(_input.myId).role);
     int difference = 0;
     for (auto const &rp: candidate)
     {
-        difference += (_currentRoleAllocation.at(rp.first) != rp.second);
+        difference += (_input.currentRoles.at(rp.first) != rp.second);
     }
     float penalty = 1000.0 * (!validTeam) + 100.0 * (!validSelf) + 1.0 * difference + 10.0 * !preferred;
     return penalty;
