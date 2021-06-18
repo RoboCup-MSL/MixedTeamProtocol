@@ -88,12 +88,16 @@ def run(args):
     # build phase
     if do_build:
         # determine options for cmake and make
-        cmake_opts = ''
+        cxx_flags = []
         if args.trace:
-            cmake_opts += '-E env CXXFLAGS="-pg" cmake'
+            cxx_flags.append('-pg')
         if args.debug:
-            cmake_opts += '-DCMAKE_BUILD_TYPE=Debug'
-            # TODO: how to set compiler #define DEBUG? see MixedTeamProtocolImpl.cpp
+            cxx_flags.append('-DDEBUG=1')
+        cmake_opts = ''
+        if len(cxx_flags):
+            cmake_opts += ' -E env CXXFLAGS="' + ' '.join(cxx_flags) + '" cmake '
+        if args.debug:
+            cmake_opts += ' -DCMAKE_BUILD_TYPE=Debug '
         make_opts = '-j' + str(args.jobs)
         if args.verbose:
             make_opts += ' VERBOSE=1'
