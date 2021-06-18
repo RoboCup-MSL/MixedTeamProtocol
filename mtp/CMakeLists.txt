@@ -40,6 +40,9 @@ target_link_libraries(matchTests testLib gtest ${Boost_LIBRARIES} RtDButils)
 add_executable(testRoleAllocation tst/TestRoleAllocation.cpp)
 target_link_libraries(testRoleAllocation mixedTeamProtocol ${Boost_LIBRARIES})
 
+add_executable(clientSpoofer tst/ClientSpoofer.cpp)
+target_link_libraries(clientSpoofer mixedTeamProtocol ${Boost_LIBRARIES})
+
 
 
 # test suite

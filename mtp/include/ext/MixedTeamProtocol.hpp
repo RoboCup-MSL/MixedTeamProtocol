@@ -49,6 +49,10 @@ public:
     virtual void setT0(rtime const &t0) = 0;
     virtual void setCurrentTime(rtime const &t) = 0;
 
+    // communication
+    virtual void send() = 0;
+    virtual void receive() = 0;
+
     // start/stop the communication- and protocol client, asynchronously
     // so the setters/getters may not be aligned with internal ticks
     virtual void start() = 0;

@@ -138,6 +138,18 @@ void MixedTeamProtocolImpl::setCurrentTime(rtime const &t)
     _tc = t;
 }
 
+void MixedTeamProtocolImpl::send()
+{
+    // send data packet
+    _communication->sendPlayerPacket(makePacket());
+}
+
+void MixedTeamProtocolImpl::receive()
+{
+    auto k = _communication->getPlayerPackets();
+    updatePlayers(k);
+}
+
 void MixedTeamProtocolImpl::start()
 {
     _started = true;
@@ -154,8 +166,7 @@ void MixedTeamProtocolImpl::tick(rtime const &t)
     // check if started
     //if (!_started) throw std::runtime_error("protocol violation: start() needs to be called first"); // ? TODO cleanup
     // check for new packets
-    auto k = _communication->getPlayerPackets();
-    updatePlayers(k); // TODO: for visualization/worldModel it should not be needed to call tick() and do everything. There needs to be an external API method to only refresh administration.
+    receive();
     // determine if robot is the leader and act accordingly
     calculateLeader();
     // worldModel processing (always, regardless of errors)
@@ -165,7 +176,7 @@ void MixedTeamProtocolImpl::tick(rtime const &t)
     // calculate _good and _error flags
     calculateGood();
     // send data packet
-    _communication->sendPlayerPacket(makePacket());
+    send();
 }
 
 void MixedTeamProtocolImpl::updatePlayers(std::vector<PlayerPacket> packets)

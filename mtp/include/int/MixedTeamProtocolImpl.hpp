@@ -41,6 +41,8 @@ public:
     void setPreferredOwnRole(mtp::RoleEnum const &role, float preference);
     void setT0(rtime const &t0);
     void setCurrentTime(rtime const &t);
+    void send();
+    void receive();
     void start();
     void stop();
     void tick(rtime const &t);
