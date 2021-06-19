@@ -42,6 +42,7 @@ int main(int argc, char **argv)
         mtp->setOwnPosVel(mtp::Pose(x, y), mtp::Pose(), 1.0);
         float preference = 0.5;
         mtp->setPreferredOwnRole(mtp::roleStringToEnum(vm.at("role").as<std::string>()), preference);
+        mtp->send();
         sleep(dt);
     }
 
