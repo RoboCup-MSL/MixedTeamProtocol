@@ -44,7 +44,10 @@ public:
 
     ~TestCase()
     {
-        //return; // for database inspection in case test fails
+        // TODO: maybe RTDB3 can provide a control API, for linking / wiping / deleting databases?
+        // it seems the hard filesystem database removal is having negative side effects...
+        return;
+
         std::string command = "rm -rf";
         command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "mixedteam_A";
         command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "mixedteam_B";
