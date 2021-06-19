@@ -261,8 +261,8 @@ void MixedTeamProtocolImpl::calculateRoleAllocation()
     input.currentRoles = getCurrentRoleAllocation();
     if (preferredRole != RoleEnum::UNDEFINED)
     {
-        input.preferredRoles.at(_id).role = RoleEnum(preferredRole);
-        input.preferredRoles.at(_id).factor = _communication->getState<float>("PREFERENCE_FACTOR");
+        input.preferredRoles[_id].role = RoleEnum(preferredRole);
+        input.preferredRoles[_id].factor = _communication->getState<float>("PREFERENCE_FACTOR");
     }
     for (auto const& player: _players) // team members (excluding self)
     {
