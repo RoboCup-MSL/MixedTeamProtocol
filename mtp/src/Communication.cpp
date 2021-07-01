@@ -54,7 +54,7 @@ std::vector<PlayerPacket> Communication::getPlayerPackets()
     return result;
 }
 
-void Communication::sendPlayerPacket(PlayerPacket const &packet)
+void Communication::setPlayerPacket(PlayerPacket const &packet)
 {
     _rtdb.put("MTP", &packet);
 }
@@ -88,4 +88,31 @@ RefereeCommand Communication::getLastCommand()
         result.target = targetStringToEnum(target);
     }
     return result;
+}
+
+void Communication::startThread()
+{
+    if (_comm == NULL)
+    {
+        // TODO: also make configurable which threads comm should start. Use cases: 
+        // 1. (human) client spoofing only needs transmitter, not receiver. 
+        // 2. Diagnostics / visualizer on baseStation needs only receiver, not transmitter.
+        auto b = RtDB2Context::Builder(_id.shirtId, RtDB2ProcessType::comm);
+        b.withRootPath("/tmp/rtdb_mixedteam_A");
+        b.withNetwork("MTP");
+        RtDB2Context context = b.build();
+        _comm = new Comm(context);
+        _comm->settings.diagnostics = false;
+        _comm->start();
+    }
+}
+
+void Communication::stopThread()
+{
+    if (_comm != NULL)
+    {
+        _comm->shutdown();
+        delete _comm;
+        _comm = NULL;
+    }
 }

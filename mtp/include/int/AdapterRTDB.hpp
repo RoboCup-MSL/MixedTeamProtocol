@@ -4,6 +4,7 @@
 // headers from external dependencies
 #include "RtDB2.h"
 #include "Player.hpp"
+#include "comm.hpp"
 
 #define MTP_RTDB_STORAGE_PATH "/tmp/rtdb_"
 

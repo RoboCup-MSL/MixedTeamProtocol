@@ -50,13 +50,10 @@ public:
     virtual void setCurrentTime(rtime const &t) = 0;
 
     // communication
-    virtual void send() = 0;
-    virtual void receive() = 0;
-
-    // start/stop the communication- and protocol client, asynchronously
-    // so the setters/getters may not be aligned with internal ticks
-    virtual void start() = 0;
-    virtual void stop() = 0;
+    virtual void commGet() = 0;   // read from RTDB
+    virtual void commPut() = 0;   // write to RTDB
+    virtual void commStart() = 0; // start RTDB-comm thread
+    virtual void commStop() = 0;  // stop RTDB-comm thread
 
     // alternatively, user clients may tick explicitly, typically synchronizing with their own WorldModel:
     // - mtp tick

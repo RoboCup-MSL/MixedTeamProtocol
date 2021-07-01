@@ -23,7 +23,7 @@ add_library(mixedTeamProtocol
     src/PlayerId.cpp
     src/Player.cpp)
 add_library(MTP::mixedTeamProtocol ALIAS mixedTeamProtocol)
-target_link_libraries(mixedTeamProtocol RtDBrtdb)
+target_link_libraries(mixedTeamProtocol RtDBrtdb RtDBcomm)
 target_include_directories(mixedTeamProtocol
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ext>

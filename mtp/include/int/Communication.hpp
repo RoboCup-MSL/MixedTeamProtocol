@@ -20,7 +20,7 @@ public:
     ~Communication();
 
     std::vector<PlayerPacket> getPlayerPackets();
-    void sendPlayerPacket(PlayerPacket const &packet);
+    void setPlayerPacket(PlayerPacket const &packet);
 
     template<typename T>
     T getState(std::string key)
@@ -48,10 +48,15 @@ public:
     std::string getFrameString(); // TODO: const (need change in RTDB API)
     void setFrameString(std::string const &s);
 
+    // communication
+    void startThread();
+    void stopThread();
+
 private:
     PlayerId _id;
     AdapterRTDB _rtdb;
     AdapterRTDB _rtdbRefbox;
+    Comm *_comm = NULL;
 }; // end of class Communication
 
 } // end of namespace mtp
