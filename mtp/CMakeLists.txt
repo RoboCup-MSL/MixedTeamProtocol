@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.5.1)
 project(mixedTeamProtocol)
 
 find_package(RtDB)
+find_package(MunkRes)
 find_package(Boost COMPONENTS thread program_options REQUIRED QUIET)
 
 set(CMAKE_CXX_STANDARD 17) # for std::filesystem

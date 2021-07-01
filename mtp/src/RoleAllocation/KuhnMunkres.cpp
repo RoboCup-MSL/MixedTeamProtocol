@@ -13,7 +13,7 @@
 #include <iomanip>
 
 // Kuhn-Munkres library
-#include "munkres/munkres.h"
+#include "munkres.h"
 
 
 using namespace mtp;
