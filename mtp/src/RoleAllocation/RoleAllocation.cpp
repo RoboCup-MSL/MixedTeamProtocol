@@ -142,12 +142,16 @@ std::string RoleAllocationAlgorithm::describe() const
         {
             ostr << "ERROR(" << (int)rolePair.second << ")";
         }
-        std::string beforeString = "";
-        if (_input.currentRoles.count(rolePair.first))
+        std::string detailString = "";
+        if (_input.currentRoles.count(rolePair.first) && _input.currentRoles.at(rolePair.first) != mtp::RoleEnum::UNDEFINED)
         {
-            beforeString = "(" + mtp::roleEnumToString(_input.currentRoles.at(rolePair.first)) + ")";
+            detailString = "(current=" + mtp::roleEnumToString(_input.currentRoles.at(rolePair.first)) + ")";
         }
-        ostr << std::setw(20) << std::left << beforeString << std::endl;
+        if (_input.preferredRoles.count(rolePair.first) && _input.preferredRoles.at(rolePair.first).role != mtp::RoleEnum::UNDEFINED)
+        {
+            detailString += "(preferred=" + mtp::roleEnumToString(_input.preferredRoles.at(rolePair.first).role) + ")";
+        }
+        ostr << std::setw(20) << std::left << detailString << std::endl;
     }
     return ostr.str();
 }
