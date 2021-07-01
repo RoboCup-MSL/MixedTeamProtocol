@@ -31,18 +31,19 @@ int main(int argc, char **argv)
     // setup
     mtp::PlayerId myId(1, vm.at("id").as<int>());
     mtp::MixedTeamProtocol mtp(myId, true);
+    mtp->commStart();
 
     // loop
     float dt = 1.0 / vm.at("frequency").as<float>();
     while (true)
     {
         float x = vm.at("x").as<float>();
-        float y = vm.at("x").as<float>();
+        float y = vm.at("y").as<float>();
         // TODO: consider to use setHumanTeamMember? (optional?)
         mtp->setOwnPosVel(mtp::Pose(x, y), mtp::Pose(), 1.0);
         float preference = 0.5;
         mtp->setPreferredOwnRole(mtp::roleStringToEnum(vm.at("role").as<std::string>()), preference);
-        mtp->send();
+        mtp->tick(rtime::now());
         sleep(dt);
     }
 
