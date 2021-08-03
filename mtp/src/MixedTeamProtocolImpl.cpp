@@ -313,7 +313,7 @@ void MixedTeamProtocolImpl::calculateOwnRole()
         _roleAllocation = getRoleAllocationFromLeader();
         if (_roleAllocation.size())
         {
-            if (DEBUG) tprintf("player %s got role allocation (size %d) from leader", _id.describe().c_str(), _roleAllocation.size());
+            if (DEBUG) tprintf("player %s got role allocation (size %ld) from leader", _id.describe().c_str(), _roleAllocation.size());
         }
     } // otherwise _roleAllocation is already set
     if (_roleAllocation.count(_id))
