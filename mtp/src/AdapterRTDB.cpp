@@ -11,7 +11,7 @@ using namespace mtp;
 
 AdapterRTDB::AdapterRTDB(PlayerId const &id, std::string const &dbname, bool path_encoding)
 :
-    RtDB2(createContext(id, dbname, path_encoding))
+    RtDB2(createContext(id, dbname, path_encoding), true)
 {
     auto const &c = getContext();
     std::ostringstream os;

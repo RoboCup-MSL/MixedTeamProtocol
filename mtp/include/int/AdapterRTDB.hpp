@@ -23,7 +23,7 @@ public:
     std::set<int> getClients(); // TODO const; - require some fundamental rework in RTDB --> v3?
 
 private:
-    RtDB2Context createContext(PlayerId const &id, std::string const &dbname, bool path_encoding);
+    static RtDB2Context createContext(PlayerId const &id, std::string const &dbname, bool path_encoding);
 
 }; // end of class AdapterRTDB
 

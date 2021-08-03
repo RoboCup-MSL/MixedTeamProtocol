@@ -35,6 +35,9 @@ target_include_directories(mixedTeamProtocol
 add_library(testLib tst/MatchSimulation.cpp tst/MatchSimulationChecks.cpp tst/RobotClient.cpp)
 target_link_libraries(testLib mixedTeamProtocol)
 
+add_executable(clearHistoryTests tst/clearHistoryTests.cpp)
+target_link_libraries(clearHistoryTests testLib gtest ${Boost_LIBRARIES} RtDButils)
+
 add_executable(matchTests tst/matchTests.cpp)
 target_link_libraries(matchTests testLib gtest ${Boost_LIBRARIES} RtDButils)
 
@@ -47,6 +50,9 @@ target_link_libraries(clientSpoofer mixedTeamProtocol ${Boost_LIBRARIES})
 
 
 # test suite
+
+add_test(clearHistoryTests clearHistoryTests)
+set_tests_properties(clearHistoryTests PROPERTIES TIMEOUT 10)
 
 add_test(matchTests matchTests)
 set_tests_properties(matchTests PROPERTIES TIMEOUT 10)
