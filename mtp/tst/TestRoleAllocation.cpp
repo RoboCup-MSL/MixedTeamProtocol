@@ -16,6 +16,7 @@ int main(int argc, char **argv)
         ("help,h", "produce help message")
         ("my-id,i", po::value<int>()->default_value(1), "my id")
         ("my-role,c", po::value<std::string>()->default_value("UNDEFINED"), "my current role")
+        ("solver,s", po::value<std::string>()->default_value("MUNKRES"), "which solver to use")
         ("my-preference,p", po::value<std::string>()->default_value("UNDEFINED"), "my preferred role")
         ("num-players,n", po::value<int>()->default_value(5), "number of players in team")
         ("teammember-1,1", po::value<std::string>(), "role of first team member")
@@ -61,19 +62,42 @@ int main(int argc, char **argv)
         currentRoles[mtp::PlayerId(1, teammemberShirtId)] = role;
     }
 
-    // run the algorithm
-    std::cout << "Running algorithm ..." << std::flush;
+    // construct algorithm input
+    mtp::RoleAllocationAlgorithmInput input(myId);
+    input.currentRoles = currentRoles;
     mtp::RoleEnum myPreferredRole = mtp::roleStringToEnum(vm.at("my-preference").as<std::string>());
-    float myPreferredRoleFactor = 0.0;
     if (myPreferredRole != mtp::RoleEnum::UNDEFINED)
     {
-        myPreferredRoleFactor = 1.0; // TODO: allow more options?
+        input.preferredRoles[myId].role = myPreferredRole;
+        input.preferredRoles[myId].factor = 1.0; // TODO: allow more options?
     }
-    auto r = mtp::RoleAllocationAlgorithm(myId, currentRoles, myPreferredRole, myPreferredRoleFactor);
+
+    // select the algorithm
+    mtp::RoleAllocationAlgorithm *algo = NULL;
+    std::cout << "Running algorithm ..." << std::flush;
+    if (vm.at("solver").as<std::string>() == "BRUTEFORCE")
+    {
+        algo = new mtp::RoleAllocationAlgorithmBruteForce(input);
+    }
+    //else if (vm.at("solver").as<std::string>() == "LINEARPROGRAMMING")
+    //{
+    //    algo = new mtp::RoleAllocationAlgorithmLinearProgramming(input);
+    //}
+    else if (vm.at("solver").as<std::string>() == "MUNKRES")
+    {
+        algo = new mtp::RoleAllocationAlgorithmKuhnMunkres(input);
+    }
+    else
+    {
+        std::cerr << "invalid solver: " << vm.at("solver").as<std::string>() << std::endl;
+        return 1;
+    }
+    // print algorithm result versus input
+    algo->run();
     std::cout << " done ..." << std::endl;
 
     // print algorithm result versus input
-    std::cout << r.describe() << std::endl;
+    std::cout << algo->describe() << std::endl;
 
     return 0;
 }

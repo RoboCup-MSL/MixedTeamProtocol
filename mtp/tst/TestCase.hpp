@@ -21,6 +21,8 @@ class TestCase : public Test
 public:
     TestCase()
     {
+        return; // not needed anymore
+
         // communication workaround/trick
         // 1. either we need to instantiate comm (as process, or thread) per team
         // 2. or we need to make the data available for all agents
@@ -42,6 +44,10 @@ public:
 
     ~TestCase()
     {
+        // TODO: maybe RTDB3 can provide a control API, for linking / wiping / deleting databases?
+        // it seems the hard filesystem database removal is having negative side effects...
+        return;
+
         std::string command = "rm -rf";
         command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "mixedteam_A";
         command += std::string(" ") + MTP_RTDB_STORAGE_PATH + "mixedteam_B";

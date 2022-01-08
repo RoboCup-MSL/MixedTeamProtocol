@@ -7,13 +7,17 @@
 namespace mtp
 {
 
+typedef int PlayerIdHash; // TODO: Rob is considering to use uuid's, moving away from traditional int agent id and all associated limitations
+// (however we should take care that this doesn't make things more difficult to diagnose (?))
+// perhaps this PlayerId class belongs in RTDB? It would also help if would be serializable.
+
 class PlayerId
 {
 public:
     PlayerId(int v, int s, char t = 'A');
     PlayerId(PlayerId const &other);
 
-    int hash() const; // TODO?? uuid?
+    PlayerIdHash hash() const;
     std::string describe() const;
     bool valid() const;
 

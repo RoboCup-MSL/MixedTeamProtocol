@@ -69,6 +69,14 @@ const std::map<RoleEnum, int> maximumRoleCount = {
     {RoleEnum::DEFENDER_MAIN, 1}
 };
 
+void mtp::getMinMaxRoleCount(RoleEnum role, int &minCount, int &maxCount)
+{
+    if (minimumRoleCount.count(role)) minCount = minimumRoleCount.at(role);
+    else minCount = 0;
+    if (maximumRoleCount.count(role)) maxCount = maximumRoleCount.at(role);
+    else maxCount = 11;
+}
+
 // role count checkers and convenience functions
 
 #include "tprintf.hpp" // DEBUG

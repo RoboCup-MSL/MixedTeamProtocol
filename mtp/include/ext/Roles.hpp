@@ -6,6 +6,9 @@
 #include <string>
 #include <map>
 
+// other MTP headers
+#include "PlayerId.hpp"
+
 namespace mtp
 {
 
@@ -23,6 +26,12 @@ enum class RoleEnum
     DISABLED_IN = 8
 }; // end of enum class RoleEnum
 
+struct PreferredRole
+{
+    RoleEnum role = RoleEnum::UNDEFINED;
+    float factor = 1.0;
+}; // end of struct PreferredRole
+
 // conversion functions
 std::string roleEnumToString(RoleEnum r);
 RoleEnum roleStringToEnum(std::string s);
@@ -33,6 +42,10 @@ bool checkRoleCount(RoleEnum role, int count); // true == ok
 typedef std::map<RoleEnum, int> RoleCount;
 bool checkRoleCount(RoleCount const &roleCount); // true == ok
 std::vector<RoleEnum> calculateAvailableRoles(RoleCount const &assignedRoleCount);
+void getMinMaxRoleCount(RoleEnum role, int &minCount, int &maxCount);
+
+// role allocation / assignment
+typedef std::map<PlayerId, RoleEnum> RoleAllocation;
 
 } // end of namespace mtp
 

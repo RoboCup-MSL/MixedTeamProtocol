@@ -25,7 +25,8 @@ public:
 
     // implementation of the API
     bool good() const;
-    mtp::RoleEnum const &getOwnRole() const;
+    bool isLeader() const;
+    mtp::RoleEnum getOwnRole() const;
     std::vector<mtp::TeamMember> getTeam() const;
     std::vector<mtp::Object> getBalls() const;
     //mtp::BallPossession getBallPossession() const;
@@ -40,32 +41,32 @@ public:
     void setPreferredOwnRole(mtp::RoleEnum const &role, float preference);
     void setT0(rtime const &t0);
     void setCurrentTime(rtime const &t);
-    void start();
-    void stop();
+    void commGet();
+    void commPut();
+    void commStart();
+    void commStop();
     void tick(rtime const &t);
 
 private:
-    // data members
+    // other data members
     bool _good = false;
     PlayerId _id;
     bool _started = false;
     rtime _t0, _tc;
-    RoleEnum _role = RoleEnum::UNDEFINED;
-    uint8_t _intention = 0;
     uint8_t _error = 0;
+    RoleAllocation _roleAllocation;
     std::default_random_engine _rng;
-    RoleEnum _preferredRole = RoleEnum::UNDEFINED;
-    float _preferredRoleFactor = 0.0;
     std::shared_ptr<Communication> _communication;
-    std::map<ClientType, Player> _players;
-    PosVel _ownPosVel = { 0 };
-    bool _ownBallPossession = false;
+    std::map<PlayerIdHash, Player> _players;
 
     // functions
     void updatePlayers(std::vector<PlayerPacket> packets);
+    void calculateLeader();
     void calculateWorldModel();
     void calculateGood();
     RoleAllocation getCurrentRoleAllocation();
+    RoleAllocation getRoleAllocationFromLeader();
+    void calculateRoleAllocation(); // only done by leader
     void calculateOwnRole();
     PlayerPacket makePacket() const;
     PosVel toPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence);

@@ -2,3 +2,6 @@
 	path = rtdb2
 	url = https://github.com/RoboCup-MSL/rtdb2.git
 	branch = falcons_v2.5
+[submodule "munkres-cpp"]
+	path = munkres-cpp
+	url = git@github.com:saebyn/munkres-cpp.git

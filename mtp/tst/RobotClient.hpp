@@ -3,6 +3,7 @@
 
 // headers from this package
 #include "ext/MixedTeamProtocol.hpp"
+#include "int/Communication.hpp"
 
 // standard/system headers
 // ...
@@ -24,21 +25,32 @@ class RobotClient
         // poke for an update at some frequency (10-40Hz) by controlling simulator
         void tick(rtime const &t);
 
+        // synchronization
+        std::string getFrameString() const;
+        void setFrameString(std::string const &s);
+
         // role allocation and conflict resolution
         bool readyToPlay() const;
-        mtp::RoleEnum const &getOwnRole() const;
+        mtp::RoleEnum getOwnRole() const;
+        void setCurrentRole(mtp::RoleEnum const &role);
+        void setPreferredRole(mtp::RoleEnum const &role);
 
-        // status report one liner
-        std::string statusReport() const;
+        // status report
+        std::string getPreferredRole() const;
+        std::string statusReportLong() const;
+        std::string statusReportBrief() const;
 
         // worldModel i/o
         void setOwnPosVel(mtp::Pose const &position, mtp::Pose const &velocity, float confidence);
         std::vector<mtp::TeamMember> getTeam() const;
 
     private:
-        mtp::MixedTeamProtocol _mtp;
+        std::shared_ptr<mtp::MixedTeamProtocol> _mtp;
+        std::shared_ptr<mtp::Communication> _comm;
         float _frequency;
         float _jitter;
+        std::string _previousRole = "UNDEFINED";
+
 };
 
 #endif

@@ -13,32 +13,30 @@
 class MatchSimulation
 {
     public:
-        MatchSimulation();
+        MatchSimulation(float frequency = 10.0);
         ~MatchSimulation();
 
     public:
         // test setup
-        void addRobot(mtp::PlayerId const &playerId, float frequency = 10.0, float jitter = 0.0);
-        void setPosVel(mtp::PlayerId const &playerId, mtp::Pose const &position, mtp::Pose const &velocity, float confidence);
+        RobotClient &addRobot(mtp::PlayerId const &playerId, float frequency = 10.0, float jitter = 0.0);
+        RobotClient &getRobot(mtp::PlayerId const &playerId);
 
         // runtime match simulation
-        void advance(float duration = 1.0);
-        // TODO: set refbox
+        void advanceTick();
+        void advanceTicks(int ticks);
+        void advanceDuration(float duration);
+        void synchronize();
 
-        // state / result inspection
-        bool ok() const;
-        void report() const;
+        // state / result inspection, see also MatchSimulationChecks
+        void reportHeading() const;
+        void reportTick() const;
+        std::vector<mtp::PlayerId> getPlayers() const;
 
     private:
-        std::vector<RobotClient*> _robots;
-        std::vector<mtp::PlayerId> _players;
-        std::map<mtp::PlayerId, mtp::Pose> _playerPose;
-        rtime _t0;
-
-        bool okRoleAllocation() const;
-        bool okWorldModel() const;
-        RobotClient* find(mtp::PlayerId const &playerId) const;
-        std::vector<mtp::TeamMember> getTeam(mtp::PlayerId const &playerId) const;
+        bool _verbose = true;
+        std::map<mtp::PlayerId, RobotClient> _robots;
+        rtime _t0, _tc;
+        float _tstep = 0.1;
 };
 
 #endif

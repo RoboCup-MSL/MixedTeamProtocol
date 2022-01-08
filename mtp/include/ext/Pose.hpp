@@ -9,6 +9,12 @@ struct Pose
     float x = 0.0;
     float y = 0.0;
     float rz = 0.0;
+    Pose(float x_ = 0.0, float y_ = 0.0, float rz_ = 0.0)
+    {
+        x = x_;
+        y = y_;
+        rz = rz_;
+    }
 }; // end of class Pose
 
 } // end of namespace mtp

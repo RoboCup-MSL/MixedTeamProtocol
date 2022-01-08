@@ -8,9 +8,11 @@
 // ...
 
 
-MatchSimulation::MatchSimulation()
+MatchSimulation::MatchSimulation(float frequency)
 :
-    _t0(rtime::now())
+    _t0(rtime::now()),
+    _tc(_t0),
+    _tstep(1.0 / frequency)
 {
 }
 
@@ -18,122 +20,118 @@ MatchSimulation::~MatchSimulation()
 {
 }
 
-bool compareRobotClientPtr(RobotClient const *a, RobotClient const *b)
+bool operator<(RobotClient const &a, RobotClient const &b)
 {
-    if (a->id.teamId == b->id.teamId) return a->id.shirtId < b->id.shirtId;
-    return a->id.teamId < b->id.teamId;
+    if (a.id.teamId == b.id.teamId) return a.id.shirtId < b.id.shirtId;
+    return a.id.teamId < b.id.teamId;
 }
 
-void MatchSimulation::addRobot(mtp::PlayerId const &playerId, float frequency, float jitter)
+RobotClient &MatchSimulation::addRobot(mtp::PlayerId const &playerId, float frequency, float jitter)
 {
-    _players.push_back(playerId);
-    _robots.push_back(new RobotClient(playerId, _t0, frequency, jitter));
-    // sort robots by teamId, to improve readibility of report()
-    sort(_robots.begin(), _robots.end(), compareRobotClientPtr);
+    if (_robots.count(playerId)) throw std::runtime_error("player already registered: " + playerId.describe());
+    _robots.try_emplace(playerId, RobotClient(playerId, _t0, frequency, jitter));
+    return getRobot(playerId);
 }
 
-void MatchSimulation::setPosVel(mtp::PlayerId const &playerId, mtp::Pose const &position, mtp::Pose const &velocity, float confidence)
+RobotClient& MatchSimulation::getRobot(mtp::PlayerId const &playerId)
 {
-    // store for comparison later
-    _playerPose.insert(std::pair<mtp::PlayerId, mtp::Pose>(playerId, position));
-
-    RobotClient* rc = find(playerId);
-    if (rc != nullptr)
+    try
     {
-        rc->setOwnPosVel(position, velocity, confidence);
+        return _robots.at(playerId);
+    }
+    catch (...)
+    {
+        throw std::runtime_error("player not registered: " + playerId.describe());
     }
 }
 
-void MatchSimulation::advance(float duration)
+void MatchSimulation::synchronize()
 {
-    rtime t = _t0;
-    rtime te = _t0 + duration;
-    float dt = 0.1;
-    while (t < te)
+    // normally, on robot (or possibly also in simulation) the Comm process/thread takes care of synchronizing data
+    // however in this test suite we simulate without Comm and without its sockets and sleeps
+    // so a database synchronization mechanism is needed, currently not provided by RTDB/COMM API
+
+    // previously, a symlink trick was applied to realize this
+    // but it has a negative side effect that within a tick robots incrementally know each others data, limiting the tests we could do here
+
+    for (auto& robot: _robots)
     {
-        t += dt;
-        printf("\n");
-        printf("simulation step START timestamp: %s\n", t.toStr().c_str());
-        // poke robots
-        for (auto& robot: _robots)
+        // mimick part of Comm (TODO: refactor Comm/API to provide this core functionality?)
+
+        // get the frame string of current robot
+        std::string frameString = robot.second.getFrameString();
+        // give data to friendly robots
+        for (auto& otherRobot: _robots)
         {
-            robot->tick(t);
+            if (robot.first.teamId == otherRobot.first.teamId && otherRobot.first.hash() != robot.first.hash())
+            {
+                otherRobot.second.setFrameString(frameString);
+            }
         }
-        report();
     }
 }
 
-bool MatchSimulation::ok() const
+void MatchSimulation::advanceTick()
 {
-    return okRoleAllocation() && okWorldModel();
+    if (_verbose && _tc == _t0) reportHeading();
+    _tc += _tstep;
+    // synchronize data between robots
+    synchronize();
+    // poke robots
+    for (auto& robot: _robots)
+    {
+        robot.second.tick(_tc);
+    }
+    if (_verbose) reportTick();
 }
 
-bool MatchSimulation::okRoleAllocation() const
+void MatchSimulation::advanceTicks(int ticks)
 {
-    // checks:
-    // 1. each robot must report ready-to-play
-    // 2. the role allocation per team must be valid
-    // notes:
-    // * it can happen that check 1 is true, but 2 not, in case robots are not communicating with each other
-    bool result = true;
-    std::map<char, mtp::RoleCount> roleCounts;
+    while (ticks--) advanceTick();
+}
+
+void MatchSimulation::advanceDuration(float duration)
+{
+    rtime te = _tc + duration;
+    while (_tc < te) advanceTick();
+}
+
+void MatchSimulation::reportHeading() const
+{
+    printf("\nSimulated robots at t=0:\n");
     for (const auto& robot: _robots)
     {
-        if (!robot->readyToPlay()) // check 1
-        {
-            result = false;
-            break;
-        }
-        roleCounts[robot->id.teamId][robot->getOwnRole()] += 1;
+        printf("   %s\n", robot.second.statusReportLong().c_str());
     }
-    // check 2
-    if (roleCounts.size() < 1) result = false;
-    if (roleCounts.size() > 2) result = false;
-    for (const auto& count: roleCounts)
-    {
-        if (!mtp::checkRoleCount(count.second)) result = false;
-    }
-    return result;
-}
-
-bool MatchSimulation::okWorldModel() const
-{
-    bool result = true;
-    for (auto &p : _players)
-    {
-        result = result && (getTeam(p).size() == 5);
-        for (auto &member : getTeam(p))
-        {
-            result = result && (member.position.x == _playerPose.find(member.id)->second.x);
-            result = result && (member.position.y == _playerPose.find(member.id)->second.y);
-        }
-    }
-    return result;
-}
-
-void MatchSimulation::report() const
-{
-    std::ostringstream ostr;
+    printf("\n");
+    printf("time (s)  ");
     for (const auto& robot: _robots)
     {
-        printf("%s\n", robot->statusReport().c_str());
+        printf("%-10d", robot.second.id.hash());
     }
+    printf("\n");
 }
 
-RobotClient* MatchSimulation::find(mtp::PlayerId const &playerId) const
+void MatchSimulation::reportTick() const
 {
-    for (auto &c : _robots)
+    /* Legend:
+    X: robot reports not ready
+    L: robot claims to be the leader
+    C: robot current role has changed 
+    P: robot has a preference which is satisfied OK
+    Q: robot has a preference but MTP rejects it
+    */
+    printf("%8.3f  ", (double)(_tc - _t0));
+    for (const auto& robot: _robots)
     {
-        if (c->id == playerId)
-        {
-            return c;
-        }
+        printf("%-10s", robot.second.statusReportBrief().c_str());
     }
-    return nullptr;
+    printf("\n");
 }
 
-std::vector<mtp::TeamMember> MatchSimulation::getTeam(mtp::PlayerId const &playerId) const
+std::vector<mtp::PlayerId> MatchSimulation::getPlayers() const
 {
-    RobotClient* rc = find(playerId);
-    return rc == nullptr ? std::vector<mtp::TeamMember>() : rc->getTeam();
+    std::vector<mtp::PlayerId> result;
+    for (const auto& robot: _robots) result.push_back(robot.first);
+    return result;
 }
