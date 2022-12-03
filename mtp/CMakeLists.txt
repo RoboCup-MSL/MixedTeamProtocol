@@ -36,10 +36,10 @@ add_library(testLib tst/MatchSimulation.cpp tst/MatchSimulationChecks.cpp tst/Ro
 target_link_libraries(testLib mixedTeamProtocol)
 
 add_executable(clearHistoryTests tst/clearHistoryTests.cpp)
-target_link_libraries(clearHistoryTests testLib gtest ${Boost_LIBRARIES} RtDButils)
+target_link_libraries(clearHistoryTests testLib gtest ${Boost_LIBRARIES} RtDBrtdb RtDButils)
 
 add_executable(matchTests tst/matchTests.cpp)
-target_link_libraries(matchTests testLib gtest ${Boost_LIBRARIES} RtDButils)
+target_link_libraries(matchTests testLib gtest ${Boost_LIBRARIES} RtDBrtdb RtDButils)
 
 add_executable(testRoleAllocation tst/TestRoleAllocation.cpp)
 target_link_libraries(testRoleAllocation mixedTeamProtocol ${Boost_LIBRARIES})
