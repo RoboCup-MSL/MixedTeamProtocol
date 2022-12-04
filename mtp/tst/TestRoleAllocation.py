@@ -12,7 +12,7 @@ if os.path.isfile('testRoleAllocation'):
     CMD_NAME = './testRoleAllocation'
 else:
     # MTP repo situation
-    CMD_NAME = '../../build/mtp/testRoleAllocation'
+    CMD_NAME = os.path.realpath(__file__) + '/../../build/mtp/testRoleAllocation'
 
 
 def run_cmd(args):
@@ -42,12 +42,12 @@ class TestNoArguments(RoleAllocationTestCase):
         expected = """Running algorithm ... done ...
 Result code: 0
 Result allocation:
-  [self] vendor=1  shirt=1  team=A hash=1     : DEFENDER_GENERIC    (UNDEFINED)         
-         vendor=1  shirt=2  team=A hash=2     : DEFENDER_MAIN       (UNDEFINED)         
-         vendor=1  shirt=3  team=A hash=3     : ATTACKER_ASSIST     (UNDEFINED)         
-         vendor=1  shirt=4  team=A hash=4     : ATTACKER_MAIN       (UNDEFINED)         
-         vendor=1  shirt=5  team=A hash=5     : GOALKEEPER          (UNDEFINED)"""
-        self.assertEqual(output.strip(), expected.strip())
+  [self] vendor=1  shirt=1  team=A hash=1     : DEFENDER_GENERIC
+         vendor=1  shirt=2  team=A hash=2     : DEFENDER_MAIN   
+         vendor=1  shirt=3  team=A hash=3     : ATTACKER_ASSIST 
+         vendor=1  shirt=4  team=A hash=4     : ATTACKER_MAIN   
+         vendor=1  shirt=5  team=A hash=5     : GOALKEEPER"""
+        self.assertMultiLineEqualNoWS(output, expected)
 
 
 class TestCurrentGoalie(RoleAllocationTestCase):
@@ -61,12 +61,12 @@ class TestCurrentGoalie(RoleAllocationTestCase):
         expected = """Running algorithm ... done ...
 Result code: 0
 Result allocation:
-  [self] vendor=1  shirt=1  team=A hash=1     : GOALKEEPER          (GOALKEEPER)        
-         vendor=1  shirt=2  team=A hash=2     : DEFENDER_GENERIC    (UNDEFINED)         
-         vendor=1  shirt=3  team=A hash=3     : DEFENDER_MAIN       (UNDEFINED)         
-         vendor=1  shirt=4  team=A hash=4     : ATTACKER_ASSIST     (UNDEFINED)         
-         vendor=1  shirt=5  team=A hash=5     : ATTACKER_MAIN       (UNDEFINED)"""
-        self.assertEqual(output.strip(), expected.strip())
+  [self] vendor=1  shirt=1  team=A hash=1     : GOALKEEPER          (current=GOALKEEPER)        
+         vendor=1  shirt=2  team=A hash=2     : DEFENDER_GENERIC
+         vendor=1  shirt=3  team=A hash=3     : DEFENDER_MAIN   
+         vendor=1  shirt=4  team=A hash=4     : ATTACKER_ASSIST 
+         vendor=1  shirt=5  team=A hash=5     : ATTACKER_MAIN"""
+        self.assertMultiLineEqualNoWS(output, expected)
 
 
 class TestCurrentDefender(RoleAllocationTestCase):
@@ -79,12 +79,12 @@ class TestCurrentDefender(RoleAllocationTestCase):
         expected = """Running algorithm ... done ...
 Result code: 0
 Result allocation:
-  [self] vendor=1  shirt=1  team=A hash=1     : DEFENDER_MAIN       (DEFENDER_MAIN)     
-         vendor=1  shirt=2  team=A hash=2     : DEFENDER_GENERIC    (UNDEFINED)         
-         vendor=1  shirt=3  team=A hash=3     : ATTACKER_ASSIST     (UNDEFINED)         
-         vendor=1  shirt=4  team=A hash=4     : ATTACKER_MAIN       (UNDEFINED)         
-         vendor=1  shirt=5  team=A hash=5     : GOALKEEPER          (UNDEFINED)"""
-        self.assertEqual(output.strip(), expected.strip())
+  [self] vendor=1  shirt=1  team=A hash=1     : DEFENDER_MAIN       (current=DEFENDER_MAIN)     
+         vendor=1  shirt=2  team=A hash=2     : DEFENDER_GENERIC
+         vendor=1  shirt=3  team=A hash=3     : ATTACKER_ASSIST 
+         vendor=1  shirt=4  team=A hash=4     : ATTACKER_MAIN   
+         vendor=1  shirt=5  team=A hash=5     : GOALKEEPER"""
+        self.assertMultiLineEqualNoWS(output, expected)
 
 
 class TestNewPreference(RoleAllocationTestCase):
@@ -100,11 +100,11 @@ class TestNewPreference(RoleAllocationTestCase):
         expected = """Running algorithm ... done ...
 Result code: 0
 Result allocation:
-         vendor=1  shirt=1  team=A hash=1     : DEFENDER_MAIN       (GOALKEEPER)        
-         vendor=1  shirt=2  team=A hash=2     : ATTACKER_ASSIST     (UNDEFINED)         
-         vendor=1  shirt=3  team=A hash=3     : ATTACKER_MAIN       (UNDEFINED)         
-  [self] vendor=1  shirt=4  team=A hash=4     : GOALKEEPER          (UNDEFINED)"""
-        self.assertEqual(output.strip(), expected.strip())
+         vendor=1  shirt=1  team=A hash=1     : ATTACKER_MAIN       (current=GOALKEEPER)
+         vendor=1  shirt=2  team=A hash=2     : DEFENDER_MAIN                           
+         vendor=1  shirt=3  team=A hash=3     : ATTACKER_ASSIST                         
+  [self] vendor=1  shirt=4  team=A hash=4     : GOALKEEPER          (preferred=GOALKEEPER)"""
+        self.assertMultiLineEqualNoWS(output, expected)
 
 
 class TestThreePlayers(RoleAllocationTestCase):
@@ -117,9 +117,9 @@ class TestThreePlayers(RoleAllocationTestCase):
         expected = """Running algorithm ... done ...
 Result code: 0
 Result allocation:
-  [self] vendor=1  shirt=1  team=A hash=1     : DEFENDER_MAIN       (UNDEFINED)     
-         vendor=1  shirt=2  team=A hash=2     : ATTACKER_MAIN       (UNDEFINED)     
-         vendor=1  shirt=3  team=A hash=3     : GOALKEEPER          (UNDEFINED)"""
+  [self] vendor=1  shirt=1  team=A hash=1     : DEFENDER_MAIN
+         vendor=1  shirt=2  team=A hash=2     : ATTACKER_MAIN
+         vendor=1  shirt=3  team=A hash=3     : GOALKEEPER"""
         self.assertMultiLineEqualNoWS(output, expected)
 
 

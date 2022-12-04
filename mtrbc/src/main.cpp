@@ -48,9 +48,21 @@ int main(int argc, char **argv)
 {
     std::string host;
     std::string config;
+    std::string dbpath;
+    std::string dbname;
+    std::string network;
+    bool simulation;
     // Declare the supported options.
     po::options_description desc("Allowed options");
-    desc.add_options()("help", "produce help message")("config", po::value<std::string>(&config)->default_value("rtdb2_refbox.xml"), "rtdb configuration file")("host", po::value<std::string>(&host)->default_value("127.0.0.1"), "refbox host");
+    desc.add_options()
+        ("help", "produce help message")
+        ("config", po::value<std::string>(&config)->default_value("rtdb2_refbox.xml"), "rtdb configuration file")
+        ("host", po::value<std::string>(&host)->default_value("127.0.0.1"), "refbox host")
+        ("network", po::value<std::string>(&network)->default_value("refbox"), "refbox network name")
+        ("dbpath", po::value<std::string>(&dbpath)->default_value(RTDB2_DEFAULT_PATH), "database storage directory")
+        ("dbname", po::value<std::string>(&dbname)->default_value(""), "database name")
+        ("simulation", po::value<bool>(&simulation)->default_value(false), "simulation mode: do not start comm")
+        ;
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -61,14 +73,19 @@ int main(int argc, char **argv)
         std::cout << desc << "\n";
         return 1;
     }
-
-    RtDB2Context ctx = RtDB2Context::Builder(0, RtDB2ProcessType::comm)
-                           .withConfigFileName(config)
-                           .withNetwork("refbox")
-                           .build();
+    
+    RtDB2Context::Builder ctxBuilder(0, (simulation ? RtDB2ProcessType::dbclient : RtDB2ProcessType::comm));
+    ctxBuilder.withConfigFileName(config);
+    ctxBuilder.withNetwork(network);
+    if (dbpath.size()) ctxBuilder.withRootPath(dbpath);
+    if (dbname.size()) ctxBuilder.withDatabase(dbname);
+    RtDB2Context ctx = ctxBuilder.build();
 
     Comm comm(ctx);
-    comm.start();
+    if (!simulation)
+    {
+        comm.start();
+    }
 
     RefboxProtocol2020Client c;
     Listener l(ctx);

@@ -1,6 +1,9 @@
 // header implemented in this file
 #include "int/AdapterRTDB.hpp"
 
+// headers from other packages
+#include "RtDB2Monitor.h"
+
 // standard/system headers
 // ...
 
@@ -8,25 +11,21 @@ using namespace mtp;
 
 AdapterRTDB::AdapterRTDB(PlayerId const &id, std::string const &dbname, bool path_encoding)
 :
-    RtDB2(createContext(id, dbname, path_encoding))
+    RtDB2(createContext(id, dbname, path_encoding), true)
 {
     auto const &c = getContext();
     std::ostringstream os;
     os << c;
-    tprintf("RTDB configuration:\n%s", os.str().c_str()); // TODO: put this behind a MTP_VERBOSE compilation flag?
+    //tprintf("RTDB configuration:\n%s", os.str().c_str()); // TODO: put this behind a MTP_VERBOSE compilation flag?
 }
 
 AdapterRTDB::~AdapterRTDB()
 {
 }
 
-std::set<ClientType> AdapterRTDB::getClients() // TODO: const
+std::set<int> AdapterRTDB::getClients() // TODO: const
 {
-    std::set<ClientType> result;
-    for (auto item: getAgentIds())
-    {
-        result.insert(ClientType(item));
-    }
+    std::set<int> result = getAgentIds(); // using new RtDB2Monitor
     return result;
 }
 
