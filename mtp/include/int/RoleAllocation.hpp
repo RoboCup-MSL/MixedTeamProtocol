@@ -81,6 +81,21 @@ private:
 
 }; // end of class RoleAllocationAlgorithmKuhnMunkres
 
+class RoleAllocationAlgorithmMinPref: public RoleAllocationAlgorithm
+{
+public:
+    // this variant uses the standard Kuhn-Munkres algorithm (also known as Hungarian algorithm)
+    // it is slightly less versatile as LinearProgramming, but much more faster and good enough for now
+    // it is also much easier to install than Google OR-tools
+    using RoleAllocationAlgorithm::RoleAllocationAlgorithm;
+
+    void _run();
+
+private:
+
+}; // end of class RoleAllocationAlgorithmMinPref
+
+
 } // end of namespace mtp
 
 #endif

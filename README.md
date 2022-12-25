@@ -10,6 +10,7 @@ After cloning, just run the following command once:
 
 Also required:
 * apt packages `libgtest-dev` and `libgmock-dev`
+* pip package `lmdb` and `pause` and `hexdump`
 
 # Build and test
 To build: run `build.py`.

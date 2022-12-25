@@ -16,7 +16,8 @@ int main(int argc, char **argv)
         ("help,h", "produce help message")
         ("my-id,i", po::value<int>()->default_value(1), "my id")
         ("my-role,c", po::value<std::string>()->default_value("UNDEFINED"), "my current role")
-        ("solver,s", po::value<std::string>()->default_value("MUNKRES"), "which solver to use")
+        ("solver,s", po::value<std::string>()->default_value("MINPREF"), "which solver to use")
+        //("solver,s", po::value<std::string>()->default_value("MUNKRES"), "which solver to use")
         ("my-preference,p", po::value<std::string>()->default_value("UNDEFINED"), "my preferred role")
         ("num-players,n", po::value<int>()->default_value(5), "number of players in team")
         ("teammember-1,1", po::value<std::string>(), "role of first team member")
@@ -86,6 +87,10 @@ int main(int argc, char **argv)
     else if (vm.at("solver").as<std::string>() == "MUNKRES")
     {
         algo = new mtp::RoleAllocationAlgorithmKuhnMunkres(input);
+    }
+    else if (vm.at("solver").as<std::string>() == "MINPREF")
+    {
+        algo = new mtp::RoleAllocationAlgorithmMinPref(input);
     }
     else
     {
