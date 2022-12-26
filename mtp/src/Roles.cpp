@@ -50,7 +50,8 @@ std::vector<RoleEnum> mtp::allAssignableRoles()
 }
 
 // role count rule specifications
-
+#if 1
+// ORIGINAL
 const std::map<RoleEnum, int> minimumRoleCount = {
     {RoleEnum::UNDEFINED, 0},
     {RoleEnum::GOALKEEPER, 1},
@@ -59,7 +60,6 @@ const std::map<RoleEnum, int> minimumRoleCount = {
     {RoleEnum::ATTACKER_GENERIC, 0},
     {RoleEnum::DEFENDER_MAIN, 1}
 };
-
 const std::map<RoleEnum, int> maximumRoleCount = {
     {RoleEnum::UNDEFINED, 0},
     {RoleEnum::GOALKEEPER, 1},
@@ -68,6 +68,16 @@ const std::map<RoleEnum, int> maximumRoleCount = {
     {RoleEnum::ATTACKER_GENERIC, 0}, // disable for now, Falcons teamplay / trees need more work to fully support this new role
     {RoleEnum::DEFENDER_MAIN, 1}
 };
+#else
+const std::map<RoleEnum, int> minimumRoleCount = {
+    {RoleEnum::ATTACKER_MAIN, 1},	// only player for ball has a minimum role count
+};
+const std::map<RoleEnum, int> maximumRoleCount = {
+    {RoleEnum::GOALKEEPER, 1},
+    {RoleEnum::ATTACKER_MAIN, 1},
+    {RoleEnum::DEFENDER_MAIN, 1}
+};
+#endif
 
 void mtp::getMinMaxRoleCount(RoleEnum role, int &minCount, int &maxCount)
 {

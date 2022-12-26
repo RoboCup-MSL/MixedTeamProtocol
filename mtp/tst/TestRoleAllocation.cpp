@@ -24,6 +24,8 @@ int main(int argc, char **argv)
         ("teammember-2,2", po::value<std::string>(), "role of second team member")
         ("teammember-3,3", po::value<std::string>(), "role of third team member")
         ("teammember-4,4", po::value<std::string>(), "role of fourth team member")
+        ("preference-2,p2", po::value<std::string>(), "preference of second team member")
+
     ;
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -72,6 +74,11 @@ int main(int argc, char **argv)
         input.preferredRoles[myId].role = myPreferredRole;
         input.preferredRoles[myId].factor = 1.0; // TODO: allow more options?
     }
+    mtp::RoleEnum PreferredRole2 = mtp::roleStringToEnum(vm.at("preference-2").as<std::string>());
+    if (PreferredRole2 != mtp::RoleEnum::UNDEFINED) {
+
+    }
+
 
     // select the algorithm
     mtp::RoleAllocationAlgorithm *algo = NULL;

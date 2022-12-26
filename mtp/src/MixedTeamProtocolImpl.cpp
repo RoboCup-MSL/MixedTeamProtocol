@@ -274,8 +274,8 @@ void MixedTeamProtocolImpl::calculateRoleAllocation()
         }
     }
     // run the algorithm
-    RoleAllocationAlgorithmMinPref algo(input);
-    //RoleAllocationAlgorithmKuhnMunkres algo(input);
+    //RoleAllocationAlgorithmMinPref algo(input);
+    RoleAllocationAlgorithmKuhnMunkres algo(input);
     algo.run();
     if (DEBUG) tprintf("algorithm result:\n%s", algo.describe().c_str());
     // handle result
