@@ -24,8 +24,11 @@ int main(int argc, char **argv)
         ("teammember-2,2", po::value<std::string>(), "role of second team member")
         ("teammember-3,3", po::value<std::string>(), "role of third team member")
         ("teammember-4,4", po::value<std::string>(), "role of fourth team member")
-        ("preference-2,p2", po::value<std::string>(), "preference of second team member")
-
+        ("wanted-1,A", po::value<std::string>()->default_value("UNDEFINED"), "preference of first team member")
+        ("wanted-2,B", po::value<std::string>()->default_value("UNDEFINED"), "preference of second team member")
+        ("wanted-3,C", po::value<std::string>()->default_value("UNDEFINED"), "preference of third team member")
+        ("wanted-4,D", po::value<std::string>()->default_value("UNDEFINED"), "preference of fourth team member")
+        ("wanted-5,E", po::value<std::string>()->default_value("UNDEFINED"), "preference of fourth team member")
     ;
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -74,9 +77,35 @@ int main(int argc, char **argv)
         input.preferredRoles[myId].role = myPreferredRole;
         input.preferredRoles[myId].factor = 1.0; // TODO: allow more options?
     }
-    mtp::RoleEnum PreferredRole2 = mtp::roleStringToEnum(vm.at("preference-2").as<std::string>());
-    if (PreferredRole2 != mtp::RoleEnum::UNDEFINED) {
 
+    mtp::RoleEnum preferredRoleTeamMember1 = mtp::roleStringToEnum(vm.at("wanted-1").as<std::string>());
+    if (preferredRoleTeamMember1 != mtp::RoleEnum::UNDEFINED) {
+    	input.preferredRoles[mtp::PlayerId(1, 1)].role  = preferredRoleTeamMember1;
+    	input.preferredRoles[mtp::PlayerId(1, 1)].factor  = 1.0; // TODO: allow more options?
+    }
+
+    mtp::RoleEnum preferredRoleTeamMember2 = mtp::roleStringToEnum(vm.at("wanted-2").as<std::string>());
+    if (preferredRoleTeamMember2 != mtp::RoleEnum::UNDEFINED) {
+    	input.preferredRoles[mtp::PlayerId(1, 2)].role  = preferredRoleTeamMember2;
+    	input.preferredRoles[mtp::PlayerId(1, 2)].factor  = 1.0; // TODO: allow more options?
+    }
+
+    mtp::RoleEnum preferredRoleTeamMember3 = mtp::roleStringToEnum(vm.at("wanted-3").as<std::string>());
+    if (preferredRoleTeamMember3 != mtp::RoleEnum::UNDEFINED) {
+    	input.preferredRoles[mtp::PlayerId(1, 3)].role  = preferredRoleTeamMember2;
+    	input.preferredRoles[mtp::PlayerId(1, 3)].factor  = 1.0; // TODO: allow more options?
+    }
+
+    mtp::RoleEnum preferredRoleTeamMember4 = mtp::roleStringToEnum(vm.at("wanted-4").as<std::string>());
+    if (preferredRoleTeamMember4 != mtp::RoleEnum::UNDEFINED) {
+    	input.preferredRoles[mtp::PlayerId(1, 4)].role  = preferredRoleTeamMember4;
+    	input.preferredRoles[mtp::PlayerId(1, 4)].factor  = 1.0; // TODO: allow more options?
+    }
+
+    mtp::RoleEnum preferredRoleTeamMember5 = mtp::roleStringToEnum(vm.at("wanted-5").as<std::string>());
+    if (preferredRoleTeamMember5 != mtp::RoleEnum::UNDEFINED) {
+    	input.preferredRoles[mtp::PlayerId(1, 5)].role  = preferredRoleTeamMember5;
+    	input.preferredRoles[mtp::PlayerId(1, 5)].factor  = 1.0; // TODO: allow more options?
     }
 
 

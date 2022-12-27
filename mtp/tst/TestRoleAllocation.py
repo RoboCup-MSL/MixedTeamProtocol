@@ -227,9 +227,9 @@ class RoleAllocationTestCase(unittest.TestCase):
 
 
 
-class TestFivePlayers_MUNRES(RoleAllocationTestCase):
+class TestTwoPlayers_MUNRES(RoleAllocationTestCase):
     """
-        3 players test witn minpref.
+        2 players test witn minpref.
         role order is not defined.  
         minpref assign on order of the roles (goalkeeper is first)
     """ 
@@ -239,14 +239,13 @@ class TestFivePlayers_MUNRES(RoleAllocationTestCase):
         # setup
         args = []
         # run
-        output = run_cmd(["-c GOALKEEPER", "-p ATTACKER_MAIN",  "-p 2 ATTACKER_MAIN", "-s MUNKRES"])
+        output = run_cmd(["-n 2", "-A ATTACKER_MAIN", "-B ATTACKER_ASSIST", "-s MUNKRES"])
         # check
         expected = """Running algorithm ... done ...
 Result code: 0
 Result allocation:
-  [self] vendor=1  shirt=1  team=A hash=1     : GOALKEEPER
-         vendor=1  shirt=2  team=A hash=2     : ATTACKER_MAIN
-         vendor=1  shirt=3  team=A hash=3     : DEFENDER_MAIN"""
+  [self] vendor=1  shirt=1  team=A hash=1     : ATTACKER_MAIN       (preferred=ATTACKER_MAIN)
+         vendor=1  shirt=2  team=A hash=2     : ATTACKER_ASSIST     (preferred=ATTACKER_ASSIST)"""
         print(f">> ====================")
         print(f"{output}")
         print(f"<< ====================")

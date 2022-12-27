@@ -50,7 +50,7 @@ std::vector<RoleEnum> mtp::allAssignableRoles()
 }
 
 // role count rule specifications
-#if 1
+#if 0
 // ORIGINAL
 const std::map<RoleEnum, int> minimumRoleCount = {
     {RoleEnum::UNDEFINED, 0},
